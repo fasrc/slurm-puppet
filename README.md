@@ -1,4 +1,4 @@
-# slurm
+# slurm-puppet
 
 ## Description
 This module manages slurm for Puppet 6.
