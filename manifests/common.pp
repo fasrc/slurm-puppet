@@ -1,6 +1,6 @@
 # slurm::common includes all the basics for slurm that everything will need
 class slurm::common (
-  Hash   $slurm_pkgs    = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi'],
+  Array  $slurm_pkgs    = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi'],
   String $slurm_version = 'present',
   String $pmix_version  = 'present',
 ){
