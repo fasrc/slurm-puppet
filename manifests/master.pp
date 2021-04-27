@@ -1,10 +1,10 @@
 # slurm::master contains everything a slurm master will require
 class slurm::master (
-  String $slurm_conf    => '',
-  String $topology_conf => '',
-  String $slurmdbd_conf => '',
-  String $jobsubmit_lua => '',
-  String $slurmdbd_pass => '',
+  String $slurm_conf    = '',
+  String $topology_conf = '',
+  String $jobsubmit_lua = '',
+  String $slurmdbd_pass = '',
+  String $slurmdbd_loc  = '',
 ){
   include slurm::common
   include slurm::repo
@@ -59,7 +59,7 @@ class slurm::master (
   }
 
   file { '/etc/slurm/slurmdbd.conf':
-    source => template($slurmdbd_conf),
+    source => template('slurm/slurmdbd.conf.erb'),
     owner  => 'slurm'
     group  => 'slurm_users'
     mode   => '0600',
