@@ -93,6 +93,18 @@ class slurm::master (
     mode    => '0755',
   }
 
+  service { 'slurmctld':
+    ensure  => running,
+    enable  => true,
+    require => [
+      File['/slurm/spool'],
+      File['/etc/sysconfig/slurm'],
+      File['/slurm/etc/slurm/slurm.conf'],
+      File['/slurm/etc/slurm/topology.conf'],
+      Service['slurmdbd'],
+    ],
+  }
+
 # Performance tuning
   sysctl { 'net.core.somaxconn':
     value => $somaxconn, 
