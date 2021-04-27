@@ -1,10 +1,10 @@
 # slurm::master contains everything a slurm master will require
 class slurm::master (
-  String slurm_conf    => '',
-  String topology_conf => '',
-  String slurmdbd_conf => '',
-  String jobsubmit_lua => '',
-  String slurmdbd_pass => '',
+  String $slurm_conf    => '',
+  String $topology_conf => '',
+  String $slurmdbd_conf => '',
+  String $jobsubmit_lua => '',
+  String $slurmdbd_pass => '',
 ){
   include slurm::common
   include slurm::repo
