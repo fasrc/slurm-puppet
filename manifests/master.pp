@@ -17,42 +17,42 @@ class slurm::master (
 
   file { '/slurm/archive':
     ensure => directory,
-    owner  => 'slurm'
-    group  => 'slurm_users'
+    owner  => 'slurm',
+    group  => 'slurm_users',
   }
 
   file { '/slurm/etc':
     ensure => directory,
-    owner  => 'slurm'
-    group  => 'slurm_users'
+    owner  => 'slurm',
+    group  => 'slurm_users',
   }
 
   file { '/slurm/etc/slurm':
     ensure => directory,
-    owner  => 'slurm'
-    group  => 'slurm_users'
+    owner  => 'slurm',
+    group  => 'slurm_users',
   }
 
   file { '/slurm/spool':
     ensure => directory,
-    owner  => 'slurm'
-    group  => 'slurm_users'
+    owner  => 'slurm',
+    group  => 'slurm_users',
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
-    source => $slurm_conf
+    source => $slurm_conf,
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/slurm/etc/slurm/topology.conf':
-    source => $topology_conf
+    source => $topology_conf,
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/etc/slurm/job_submit.lua':
-    source => $jobsubmit_lua
+    source => $jobsubmit_lua,
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
