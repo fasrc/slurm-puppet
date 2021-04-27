@@ -4,6 +4,7 @@ class slurm::master (
   String topology_conf => '',
   String slurmdbd_conf => '',
   String jobsubmit_lua => '',
+  String slurmdbd_pass => '',
 ){
   include slurm::common
   include slurm::repo
