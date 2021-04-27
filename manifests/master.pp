@@ -59,7 +59,7 @@ class slurm::master (
   }
 
   file { '/etc/slurm/slurmdbd.conf':
-    source => template('slurm/slurmdbd.conf.erb'),
+    source => template('slurm-puppet/slurmdbd.conf.erb'),
     owner  => 'slurm',
     group  => 'slurm_users',
     mode   => '0600',
