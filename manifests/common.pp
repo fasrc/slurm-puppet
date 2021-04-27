@@ -13,4 +13,14 @@ class slurm::common (
     group  => 'root',
     mode   => '0755'
   }
+
+  file { '/etc/slurm/slurm.conf':
+    ensure => link,
+    target => '/slurm/etc/slurm/slurm.conf',
+  }
+
+  file { '/etc/slurm/topology.conf':
+    ensure => link,
+    target => '/slurm/etc/slurm/topology.conf',
+  }
 }
