@@ -23,4 +23,48 @@ class slurm::common (
     ensure => link,
     target => '/slurm/etc/slurm/topology.conf',
   }
+
+  file { '/etc/sysconfig/slurm':
+    source  => 'puppet:///modules/slurm/sysconfig-slurm',
+    owner   => 'root',
+    group   => 'root',
+  }
+
+  file { '/usr/local/bin/showq':
+    ensure  => link,
+    target  => '/slurm/etc/slurm/showq',
+  }
+
+  file { '/usr/local/bin/showq-slurm':
+    ensure  => link,
+    target  => '/slurm/etc/slurm/showq',
+  }
+
+  file { '/usr/local/bin/lsload':
+    source => 'puppet:///modules/slurm/lsload',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  file { '/usr/local/bin/scalc':
+    source => 'puppet:///modules/slurm/scalc',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  file { '/usr/local/bin/find-best-partition':
+    source => 'puppet:///modules/slurm/find-best-partition',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  file { '/usr/local/bin/seff-array':
+    source => 'puppet:///modules/slurm/seff-array.py',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
 }
