@@ -16,6 +16,7 @@ class slurm::master (
   Integer $netdev_max_backlog  = 250000,
   Integer $tcp_no_metrics_save = 1,
   Integer $tcp_moderate_rcvbuf = 1,
+  Integer $max_open_files      = 8192,
 ){
   include slurm::common
   include slurm::repo
@@ -142,4 +143,19 @@ class slurm::master (
   sysctl { 'net.ipv4.tcp_moderate_rcvbuf':
     value => $tcp_moderate_rcvbuf,
   }
+
+  file { '/etc/systemd/system/slurmctld.service.d':
+    ensure => directory,
+  }
+
+  file { '/etc/systemd/system/slurmctld.service.d/50-ulimit.conf':
+    ensure  => present,
+    content => template('slurm/ulimits-dropin.erb'),
+    notify  => [
+      Exec['systemctl-daemon-reload'],
+      Service['slurmctld'],
+    ],
+    require => File['/etc/systemd/system/slurmctld.service.d'],
+  }
+
 }
