@@ -1,0 +1,6 @@
+#!/bin/bash
+<% if @systemd -%>
+systemctl restart <%= @service_name %>
+<% else -%>
+service <%= @service_name %> restart
+<% end -%>

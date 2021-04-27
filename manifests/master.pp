@@ -1,5 +1,6 @@
 # slurm::master contains everything a slurm master will require
 class slurm::master (
+  String  $service_name        = 'slurmctld',
   String  $slurm_conf          = '',
   String  $topology_conf       = '',
   String  $jobsubmit_lua       = '',
@@ -72,6 +73,13 @@ class slurm::master (
     owner   => 'slurm',
     group   => 'slurm_users',
     mode    => '0600',
+  }
+
+  file { '/usr/local/sbin/slurm_restart':
+    content => template('slurm/slurm_restart.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
   }
 
 # Performance tuning
