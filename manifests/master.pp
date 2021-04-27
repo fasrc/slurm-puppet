@@ -1,5 +1,6 @@
 # slurm::master contains everything a slurm master will require
 class slurm::master (
+  Array   $slurm_pkgs          = ['slurm-slurmctld','slurm-slurmdbd']
   String  $service_name        = 'slurmctld',
   String  $slurm_conf          = '',
   String  $topology_conf       = '',
@@ -18,6 +19,9 @@ class slurm::master (
 ){
   include slurm::common
   include slurm::repo
+
+  ensure_packages($slurm_pkgs, {'ensure' => $slurm_version})
+  ensure_packages(['lua-posix'], {'ensure' => present})
 
   file { '/slurm':
     ensure => directory,
