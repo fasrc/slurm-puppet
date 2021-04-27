@@ -77,6 +77,13 @@ class slurm::master (
     owner   => 'slurm',
     group   => 'slurm_users',
     mode    => '0600',
+    notify  => Service['slurmdbd'],
+  }
+
+  service { 'slurmdbd':
+    ensure  => running,
+    enable  => true,
+    require => File['/etc/slurm/slurmdbd.conf'],
   }
 
   file { '/usr/local/sbin/slurm_restart':
