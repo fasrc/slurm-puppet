@@ -74,22 +74,6 @@ class slurm::master (
     mode    => '0600',
   }
 
-# Mail settings
-  file { '/etc/postfix/generic':
-    content => "slurm@${::fqdn} slurm@rc.fas.harvard.edu\n",
-    notify  => Exec['Build Postfix generic map'],
-  }
-  exec { 'Build Postfix generic map':
-    command     => 'postmap hash:/etc/postfix/generic',
-    refreshonly => true,
-  }
-  augeas { 'Rewrite slurm@hostname to slurm@rc.fas':
-    context => '/files/etc/postfix/main.cf',
-    changes => 'set smtp_generic_maps hash:/etc/postfix/generic',
-    require => File['/etc/postfix/generic'],
-    notify  => Service['postfix'],
-  }
-
 # Performance tuning
   sysctl { 'net.core.somaxconn':
     value => $somaxconn, 
