@@ -151,11 +151,6 @@ class slurm::master (
   file { '/etc/systemd/system/slurmctld.service.d/50-ulimit.conf':
     ensure  => present,
     content => template('slurm/ulimits-dropin.erb'),
-    notify  => [
-      Exec['systemctl-daemon-reload'],
-      Service['slurmctld'],
-    ],
     require => File['/etc/systemd/system/slurmctld.service.d'],
   }
-
 }
