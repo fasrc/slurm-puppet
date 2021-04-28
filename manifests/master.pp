@@ -2,9 +2,9 @@
 class slurm::master (
   Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
   String  $service_name        = 'slurmctld',
-  String  $slurm_conf          = '',
-  String  $topology_conf       = '',
-  String  $jobsubmit_lua       = '',
+  String  $slurm_conf          = 'puppet:///modules/filestore/slurm/${cluster}/slurm.conf',
+  String  $topology_conf       = 'puppet:///modules/filestore/slurm/${cluster}/topology.conf',
+  String  $jobsubmit_lua       = 'puppet:///modules/filestore/slurm/${cluster}/job_submitlua.conf',
   String  $slurmdbd_pass       = '',
   String  $slurmdbd_loc        = '',
   Integer $somaxconn           = 4096,

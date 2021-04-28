@@ -4,7 +4,7 @@ class slurm::repo (
   String  $ensure       = 'present',
   Integer $enabled      = 1,
   Integer $gpgcheck     = 0,
-  Integer $priority     = 99,
+  Integer $priority     = 90,
   String  $baseurl      = 'http://mirror-proxy.rc.fas.harvard.edu/slurm-test/centos${::operatingsystemmajrelease}',
 ){
   if $manage_repo {
