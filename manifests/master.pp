@@ -52,19 +52,19 @@ class slurm::master (
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
-    source => 'puppet:///modules/filestore/slurm/$cluster/slurm.conf',
+    source => 'puppet:///modules/filestore/slurm/$slurm::common::cluster/slurm.conf',
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/slurm/etc/slurm/topology.conf':
-    source => 'puppet:///modules/filestore/slurm/$cluster/topology.conf',
+    source => 'puppet:///modules/filestore/slurm/$slurm::common::cluster/topology.conf',
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/etc/slurm/job_submit.lua':
-    source => 'puppet:///modules/filestore/slurm/$cluster/job_submitlua.conf',
+    source => 'puppet:///modules/filestore/slurm/$slurm::common::cluster/job_submitlua.conf',
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
