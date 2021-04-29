@@ -2,9 +2,6 @@
 class slurm::master (
   Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
   String  $service_name        = 'slurmctld',
-  String  $slurm_conf          = 'puppet:///modules/filestore/slurm/$cluster/slurm.conf',
-  String  $topology_conf       = 'puppet:///modules/filestore/slurm/$cluster/topology.conf',
-  String  $jobsubmit_lua       = 'puppet:///modules/filestore/slurm/$cluster/job_submitlua.conf',
   String  $slurmdbd_pass       = '',
   String  $slurmdbd_loc        = '',
   Integer $somaxconn           = 4096,
@@ -55,19 +52,19 @@ class slurm::master (
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
-    source => $slurm_conf,
+    source => 'puppet:///modules/filestore/slurm/$cluster/slurm.conf',
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/slurm/etc/slurm/topology.conf':
-    source => $topology_conf,
+    source => 'puppet:///modules/filestore/slurm/$cluster/topology.conf',
     owner  => 'root',
     group  => 'root',
   }
 
   file { '/etc/slurm/job_submit.lua':
-    source => $jobsubmit_lua,
+    source => 'puppet:///modules/filestore/slurm/$cluster/job_submitlua.conf',
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
