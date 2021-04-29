@@ -67,7 +67,7 @@ class slurm::master (
   }
 
   file { '/etc/slurm/job_submit.lua':
-    source => "puppet:///modules/filestore/slurm/${cluster}/job_submitlua.conf",
+    source => "puppet:///modules/filestore/slurm/${cluster}/job_submit.lua",
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
