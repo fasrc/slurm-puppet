@@ -18,6 +18,9 @@ class slurm::master (
   include slurm::common
   include slurm::repo
 
+  $slurm_version = $slurm::common::slurm_version
+  $cluster = $slurm::common::cluster
+
   ensure_packages($slurm_master_pkgs, {'ensure' => $slurm_version})
   ensure_packages(['lua-posix'], {'ensure' => present})
 
