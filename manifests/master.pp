@@ -14,6 +14,7 @@ class slurm::master (
   Integer $tcp_no_metrics_save = 1,
   Integer $tcp_moderate_rcvbuf = 1,
   Integer $max_open_files      = 8192,
+  String  $max_stack_size      = 'infinity',
 ){
   include slurm::common
   include slurm::repo
