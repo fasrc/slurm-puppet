@@ -8,7 +8,7 @@ class slurm::repo (
   String  $baseurl      = "http://mirror-proxy.rc.fas.harvard.edu/slurm-test/centos${::operatingsystemmajrelease}",
 ){
   if $manage_repo {
-    if $::osfamily == 'RedHat' {
+    if $::operatingsystem =~ /(AlmaLinux|RedHat|CentOS|Rocky)/ {
       yumrepo { 'slurm':
         ensure   => $ensure,
         descr    => 'slurm rpms',
