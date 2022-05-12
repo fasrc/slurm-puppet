@@ -7,13 +7,13 @@ ArchiveEvents=yes
 ArchiveSuspend=yes
 ArchiveTXN=yes
 ArchiveUsage=yes
-PurgeEventAfter=6month
-PurgeJobAfter=6month
-PurgeResvAfter=6month
-PurgeStepAfter=6month
-PurgeSuspendAfter=6month
-PurgeTXNAfter=6month
-PurgeUsageAfter=6month
+PurgeEventAfter=<%= @slurmdbd_purge_time %>
+PurgeJobAfter=<%= @slurmdbd_purge_time %>
+PurgeResvAfter=<%= @slurmdbd_purge_time %>
+PurgeStepAfter=<%= @slurmdbd_purge_time %>
+PurgeSuspendAfter=<%= @slurmdbd_purge_time %>
+PurgeTXNAfter=<%= @slurmdbd_purge_time %>
+PurgeUsageAfter=<%= @slurmdbd_purge_time %>
 
 # Authentication info
 AuthType=auth/munge

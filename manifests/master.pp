@@ -2,6 +2,7 @@
 class slurm::master (
   Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
   String  $service_name        = 'slurmctld',
+  String  $slurmdbd_purge_time = '6month',
   String  $slurmdbd_pass       = '',
   String  $slurmdbd_loc        = '',
   Integer $somaxconn           = 4096,
