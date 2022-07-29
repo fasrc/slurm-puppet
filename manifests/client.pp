@@ -8,6 +8,7 @@ class slurm::client (
   String  $constrain_devices    = 'yes',
 ){
   include slurm::common
+  include ::pam
 
   $slurm_version = $slurm::common::slurm_version
 
@@ -110,5 +111,12 @@ class slurm::client (
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
     ],
+  }
+
+  file { '/etc/pam.d/slurm':
+    source  => 'puppet:///modules/slurm/pam_slurm',
+    owner   => 'root',
+    group   => 'root',
+    require => Package['slurm-pam_slurm'],
   }
 }
