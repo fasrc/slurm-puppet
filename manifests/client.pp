@@ -1,7 +1,11 @@
 # slurm::client includes everything needed for client hosts
 class slurm::client (
-  Array   $slurm_client_pkgs   = ['slurm-slurmd','slurm-pam_slurm'],
-  String  $service_name        = 'slurmd',
+  Array   $slurm_client_pkgs    = ['slurm-slurmd','slurm-pam_slurm'],
+  String  $service_name         = 'slurmd',
+  String  $constrain_cores      = 'yes',
+  String  $constrain_ram_space  = 'yes',
+  String  $constrain_swap_space = 'yes',
+  String  $constrain_devices    = 'yes',
 ){
   include slurm::common
 
@@ -28,5 +32,15 @@ class slurm::client (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
+  }
+
+  file { '/etc/slurm/cgroup.conf' :
+    content => template('slurm/cgroup.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
   }
 }
