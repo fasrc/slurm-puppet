@@ -84,4 +84,23 @@ class slurm::client (
       File['/etc/slurm'],
     ],
   }
+
+  service { 'slurm':
+    name      => $service_name,
+    ensure    => running,
+    enable    => true,
+    require   => [
+      Class['slurm::common'],
+      File['/etc/sysconfig/slurm'],
+      File['/var/slurmd/run'],
+      File['/var/slurmd/spool'],
+      File['/etc/slurm/cgroup.conf'],
+      File['/usr/local/bin/slurm_task_prolog'],
+      File['/usr/local/bin/slurm_epilog'],
+      File['/usr/local/sbin/slurm_reboot'],
+      File['/etc/slurm/cgroup.conf'],
+      File['/etc/slurm/job_container.conf'],
+      File['/etc/slurm/slurm.conf'],
+    ],
+  }
 }

@@ -97,6 +97,7 @@ class slurm::master (
   }
 
   service { 'slurmctld':
+    name    => $service_name,
     ensure  => running,
     enable  => true,
     require => [
