@@ -119,30 +119,4 @@ class slurm::client (
     group   => 'root',
     require => Package['slurm-pam_slurm'],
   }
-
-  # Add Slurm to sshd pam configuration.
-  augeas { 'Enable Slurm PAM checking for SSH access':
-    context => '/files/etc/pam.d/sshd',
-    changes => [
-      'ins 1000 before *[type = "account"][position() = 3]',
-      'set 1000/type account',
-      'set 1000/control required',
-      'set 1000/module "pam_slurm.so"',
-    ],
-    onlyif  => 'match *[module = "pam_slurm.so"] size == 0',
-    require => Package['slurm-pam_slurm'],
-  }
-
-  augeas { 'Enable Slurm PAM Adoption of SSH access':
-    context => '/files/etc/pam.d/sshd',
-    changes => [
-      'ins 1000 before *[type = "account"][position() = 2]',
-      'set 1000/type account',
-      'set 1000/control sufficient',
-      'set 1000/module "pam_slurm_adopt.so"',
-    ],
-    onlyif  => 'match *[module = "pam_slurm_adopt.so"] size == 0',
-    require => Package['slurm-pam_slurm'],
-  }
-
 }
