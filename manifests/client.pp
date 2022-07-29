@@ -43,4 +43,24 @@ class slurm::client (
       File['/etc/slurm'],
     ],
   }
+
+  file { '/etc/slurm/cgroup_allowed_devices_file.conf' :
+    source  => 'puppet:///modules/slurm/cgroup_allowed_devices_file.conf',
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
+  }
+
+  file { '/etc/slurm/job_container.conf' :
+    source  => 'puppet:///modules/slurm/job_container.conf',
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
+  }
 }
