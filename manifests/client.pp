@@ -1,6 +1,7 @@
 # slurm::client includes everything needed for client hosts
 class slurm::client (
   Array   $slurm_client_pkgs   = ['slurm-slurmd','slurm-pam_slurm'],
+  String  $service_name        = 'slurmd',
 ){
   include slurm::common
 
@@ -17,6 +18,13 @@ class slurm::client (
 
   file { '/usr/local/bin/slurm_epilog':
     content => template('slurm/slurm_epilog.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
+  file { '/usr/local/sbin/slurm_restart':
+    content => template('slurm/slurm_restart.erb'),
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
