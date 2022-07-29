@@ -91,7 +91,6 @@ class slurm::client (
     enable    => true,
     require   => [
       Class['slurm::common'],
-      File['/etc/sysconfig/slurm'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool'],
       File['/etc/slurm/cgroup.conf'],
@@ -101,6 +100,7 @@ class slurm::client (
       File['/etc/slurm/cgroup.conf'],
       File['/etc/slurm/job_container.conf'],
       File['/etc/slurm/slurm.conf'],
+      File['/etc/slurm/topology.conf'],
     ],
   }
 }
