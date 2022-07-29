@@ -55,6 +55,16 @@ class slurm::client (
     mode    => '0755',
   }
 
+  file { '/usr/local/bin/node_monitor':
+    content => template('slurm/node_monitor.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => [
+      Class['profile::nhc'],
+    ]
+  }
+
   file { '/etc/slurm/cgroup.conf' :
     content => template('slurm/cgroup.conf.erb'),
     owner   => 'root',
@@ -85,16 +95,16 @@ class slurm::client (
     ],
   }
 
-  service { 'slurm':
+  service { 'slurmd':
     name      => $service_name,
     ensure    => running,
     enable    => true,
     require   => [
-      Class['slurm::common'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool'],
       File['/usr/local/bin/slurm_task_prolog'],
       File['/usr/local/bin/slurm_epilog'],
+      File['/usr/local/bin/node_monitor'],
       File['/etc/slurm/cgroup.conf'],
       File['/etc/slurm/job_container.conf'],
       File['/etc/slurm/slurm.conf'],
