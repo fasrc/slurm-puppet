@@ -1,0 +1,19 @@
+#!/bin/sh
+
+progname=${0##*/}
+log() {
+	logger -it "$progname"
+}
+
+echo "Starting task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER..." | log
+
+### Setting MALLOC_ARENA_MAX to be lower than the normal default of 8 per core
+### This should improve memory overhead for matlab and other related codes
+### For full context see: https://rchelp.rc.fas.harvard.edu/Ticket/Display.html?id=155848
+
+let x=4 y=$SLURM_CPUS_ON_NODE z=x*y
+echo "export MALLOC_ARENA_MAX=$z"
+
+echo "Task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER complete." | log
+
+exit 0
