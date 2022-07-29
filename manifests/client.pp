@@ -13,6 +13,27 @@ class slurm::client (
 
   ensure_packages($slurm_client_pkgs, {'ensure' => $slurm_version})
 
+  file { '/var/slurmd':
+    ensure  => directory,
+    owner   => 'slurm',
+    group   => 'slurm_users',
+    backup  => false,
+  }
+
+  file { '/var/slurmd/run':
+    ensure => directory,
+    backup => false,
+    owner  => 'slurm',
+    group  => 'slurm_users',
+  }
+
+  file { '/var/slurmd/spool':
+    ensure => directory,
+    backup => false,
+    owner  => 'slurm',
+    group  => 'slurm_users',
+  }
+
   file { '/usr/local/bin/slurm_task_prolog':
     content => template('slurm/slurm_task_prolog.erb'),
     owner   => 'root',
