@@ -55,6 +55,13 @@ class slurm::common (
     mode   => '0755',
   }
 
+  file { '/usr/local/bin/spart':
+    source => 'puppet:///modules/slurm/spart',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
   file { '/usr/local/bin/find-best-partition':
     source => 'puppet:///modules/slurm/find-best-partition',
     owner  => 'root',
