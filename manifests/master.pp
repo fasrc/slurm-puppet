@@ -1,6 +1,6 @@
 # slurm::master contains everything a slurm master will require
 class slurm::master (
-  Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
+  Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd','slurm-slurmrestd'],
   String  $service_name        = 'slurmctld',
   String  $slurmdbd_purge_time = '6month',
   String  $slurmdbd_pass       = '',
@@ -107,6 +107,12 @@ class slurm::master (
       File['/slurm/etc/slurm/topology.conf'],
       Service['slurmdbd'],
     ],
+  }
+
+  service { 'slurmrestd':
+    ensure  => running,
+    enable  => true,
+    require => File['/etc/slurm/slurm.conf'],
   }
 
 # Performance tuning
