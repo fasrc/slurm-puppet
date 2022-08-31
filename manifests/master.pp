@@ -109,6 +109,12 @@ class slurm::master (
     ],
   }
 
+  file { '/etc/sysconfig/slurmrestd':
+    content => file('slurm/sysconfig-slurmrestd'),
+    owner   => 'root',
+    group   => 'root',
+  }
+
   service { 'slurmrestd':
     ensure  => running,
     enable  => true,
