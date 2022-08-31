@@ -111,11 +111,11 @@ class slurm::master (
 
   file_line { "Slurmrestd Execstart":
     ensure  => present,
-    path    => '/usr/lib/systemd/system/slurmrestd.service'
-    match   => '^ExecStart'
-    line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody localhost:443'
-    replace => true
-    notify  => Service['slurmrestd']
+    path    => '/usr/lib/systemd/system/slurmrestd.service',
+    match   => '^ExecStart',
+    line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody localhost:443',
+    replace => true,
+    notify  => Service['slurmrestd'],
   }
 
   service { 'slurmrestd':
