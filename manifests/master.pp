@@ -118,6 +118,13 @@ class slurm::master (
     notify  => Service['slurmrestd'],
   }
 
+  file_line { "Remove JWT":
+    ensure => absent,
+    path   => '/usr/lib/systemd/system/slurmrestd.service',
+    line   => 'Environment="SLURM_JWT=daemon"',
+    notify => Service['slurmrestd'],
+  }
+
   service { 'slurmrestd':
     ensure  => running,
     enable  => true,
