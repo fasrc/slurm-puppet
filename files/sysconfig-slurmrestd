@@ -1,1 +1,1 @@
--u nobody -g nobody
+SLURMRESTD_OPTIONS="-u nobody -g nobody"
