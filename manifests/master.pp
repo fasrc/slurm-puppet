@@ -109,10 +109,13 @@ class slurm::master (
     ],
   }
 
-  file { '/etc/sysconfig/slurmrestd':
-    content => file('slurm/sysconfig-slurmrestd'),
-    owner   => 'root',
-    group   => 'root',
+  file_line { "Slurmrestd Execstart":
+    ensure  => present,
+    path    => '/usr/lib/systemd/system/slurmrestd.service'
+    match   => '^ExecStart'
+    line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody localhost:443'
+    replace => true
+    notify  => Service['slurmrestd']
   }
 
   service { 'slurmrestd':
@@ -120,7 +123,6 @@ class slurm::master (
     enable  => true,
     require => [
       File['/etc/slurm/slurm.conf'],
-      File['/etc/sysconfig/slurmrestd'],
     ],
   }
 
