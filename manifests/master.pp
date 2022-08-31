@@ -118,7 +118,7 @@ class slurm::master (
   service { 'slurmrestd':
     ensure  => running,
     enable  => true,
-    require => {
+    require => [
       File['/etc/slurm/slurm.conf'],
       File['/etc/sysconfig/slurmrestd'],
     ],
