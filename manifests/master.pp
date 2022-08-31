@@ -118,7 +118,10 @@ class slurm::master (
   service { 'slurmrestd':
     ensure  => running,
     enable  => true,
-    require => File['/etc/slurm/slurm.conf'],
+    require => {
+      File['/etc/slurm/slurm.conf'],
+      File['/etc/sysconfig/slurmrestd'],
+    ],
   }
 
 # Performance tuning
