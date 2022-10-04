@@ -65,6 +65,16 @@ class slurm::client (
     ]
   }
 
+  file { '/etc/slurm/acct_gather.conf' :
+    content => template('slurm/acct_gather.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
+  }
+
   file { '/etc/slurm/cgroup.conf' :
     content => template('slurm/cgroup.conf.erb'),
     owner   => 'root',
