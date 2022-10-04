@@ -16,6 +16,7 @@ class slurm::master (
   Integer $tcp_moderate_rcvbuf = 1,
   Integer $max_open_files      = 8192,
   String  $max_stack_size      = 'infinity',
+  Boolean $enable_slurmrestd   = false,
 ){
   include slurm::common
   include slurm::repo
@@ -155,5 +156,33 @@ class slurm::master (
     ensure  => present,
     content => template('slurm/ulimits-dropin.erb'),
     require => File['/etc/systemd/system/slurmctld.service.d'],
+  }
+  
+  if $enable_slurmrestd {
+    ensure_packages('slurm-slurmrestd', {'ensure' => $slurm_version})
+
+    file_line { "Slurmrestd Execstart":
+      ensure  => present,
+      path    => '/usr/lib/systemd/system/slurmrestd.service',
+      match   => '^ExecStart',
+      line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody unix:/var/lib/slurmrestd.socket',
+      replace => true,
+      notify  => Service['slurmrestd'],
+    }
+
+    file_line { "Remove JWT":
+      ensure => absent,
+      path   => '/usr/lib/systemd/system/slurmrestd.service',
+      line   => 'Environment="SLURM_JWT=daemon"',
+      notify => Service['slurmrestd'],
+    }
+
+    service { 'slurmrestd':
+      ensure  => running,
+      enable  => true,
+      require => [
+        File['/etc/slurm/slurm.conf'],
+      ],
+    }
   }
 }
