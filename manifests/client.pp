@@ -2,6 +2,8 @@
 class slurm::client (
   Array   $slurm_client_pkgs    = ['slurm-slurmd','slurm-pam_slurm'],
   String  $service_name         = 'slurmd',
+  String  $service_ensure       = 'running',
+  Boolean $service_enable       = true,
   String  $constrain_cores      = 'yes',
   String  $constrain_ram_space  = 'yes',
   String  $constrain_swap_space = 'yes',
@@ -97,8 +99,8 @@ class slurm::client (
 
   service { 'slurmd':
     name      => $service_name,
-    ensure    => running,
-    enable    => true,
+    ensure    => $service_ensure,
+    enable    => $service_enable,
     require   => [
       File['/var/slurmd/run'],
       File['/var/slurmd/spool'],
