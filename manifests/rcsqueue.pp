@@ -22,5 +22,12 @@ class slurm::rcsqueue (
       group   => 'root',
       mode    => '0644',
     }
+
+    file { '/usr/local/bin/squeue':
+      source => 'puppet:///modules/slurm/rc-squeue',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+    }
   }
 }
