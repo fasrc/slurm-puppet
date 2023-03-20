@@ -17,3 +17,7 @@ Installs everything needed for a slurm client.
 
 ### slurm::master
 Installs everything needed for a slurm master.  Note this assumes that you are running slurmctld and slurmdbd on the same host.
+
+### slurm::rcsqueue
+Installs the caching version of squeue developed by FASRC.
+
