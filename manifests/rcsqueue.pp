@@ -11,16 +11,16 @@ class slurm::rcsqueue (
 
     file { '/etc/profile.d/rc-squeue.sh':
       content => template ('slurm/rc-squeue.sh.erb'),
-      owner   => root,
-      group   => root,
-      mode    => 0644,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
     }
 
     file { '/etc/profile.d/rc-squeue.csh':
       content => template ('slurm/rc-squeue.csh.erb'),
-      owner   => root,
-      group   => root,
-      mode    => 0644,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
     }
   }
 }
