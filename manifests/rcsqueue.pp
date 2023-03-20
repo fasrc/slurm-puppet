@@ -3,6 +3,6 @@ class slurm::rcsqueue (
   Boolean $enable = false,
 ){
   if $enable {
-    ensure_packages(['python3-PyMySQL'])
+    ensure_packages(['python3-mysqlclient'])
   }
 }
