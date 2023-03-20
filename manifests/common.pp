@@ -69,6 +69,8 @@ class slurm::common (
     mode   => '0755',
   }
 
+  ensure_packages(['python3-pandas','python3-numpy'])
+
   file { '/usr/local/bin/seff-array':
     source => 'puppet:///modules/slurm/seff-array.py',
     owner  => 'root',
