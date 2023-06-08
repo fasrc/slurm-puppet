@@ -63,6 +63,13 @@ if [ "$(rpm --qf '%{version}\n' -q lustre-client)" != "${lustre_module_version}"
 fi
 <% end %>
 
+# Checking cgroups version
+if ["$(stat -fc %T /sys/fs/cgroup/)" != "cgroup2fs"]; then
+    reason="cgroups is not version 2"
+	drain_node "$reason"
+	exit 0
+fi
+
 # Checking the CPU Frequency is boosting when under load
 mhz=$(cat /proc/cpuinfo | grep "cpu MHz" | sort -V | tail -n 1 | cut -d ":" -f 2 | sed 's/ //g')
 load=$(cat /proc/loadavg | cut -d " " -f 1)
