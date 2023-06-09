@@ -4,6 +4,7 @@ class slurm::common (
   String $slurm_version = 'present',
   String $pmix_version  = 'present',
   String $cluster       = 'test',
+  String $munge_threads = '10',
 ){
   ensure_packages($slurm_pkgs, {'ensure' => $slurm_version})
   ensure_packages(['pmix'], {'ensure' => $pmix_version})
@@ -74,5 +75,23 @@ class slurm::common (
     owner  => 'root',
     group  => 'root',
     mode   => '0755',
+  }
+
+  $dropin_dir = '/etc/systemd/system/munge.service.d'
+  $dropin = "${dropin_dir}/10-num-threads.conf"
+
+  file { '/etc/systemd/system/munge.service.d':
+    ensure  => directory,
+  }
+
+  file { '/etc/systemd/system/munge.service.d/10-num-threads.conf':
+    ensure  => present,
+    content => "[Service]\nExecStart=\nExecStart=/usr/sbin/munged --num-threads ${munge_threads}",
+    before  => Service['munge'],
+    notify  => [
+    Exec['systemctl-daemon-reload'],
+      Service['munge'],
+    ],
+    require => File['/etc/systemd/system/munge.service.d'],
   }
 }
