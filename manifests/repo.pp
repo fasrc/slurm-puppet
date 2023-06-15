@@ -6,6 +6,7 @@ class slurm::repo (
   Integer $gpgcheck     = 0,
   Integer $priority     = 85,
   String  $baseurl      = "http://mirror-proxy.rc.fas.harvard.edu/slurm-test/centos${::operatingsystemmajrelease}",
+  String  $proxy        = '_none_',
 ){
   if $manage_repo {
     if $::operatingsystem =~ /(AlmaLinux|RedHat|CentOS|Rocky)/ {
@@ -16,6 +17,7 @@ class slurm::repo (
         gpgcheck => $gpgcheck,
         baseurl  => $baseurl,
         priority => $priority,
+        proxy    => $proxy,
       }
     }
   }
