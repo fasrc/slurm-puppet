@@ -98,7 +98,7 @@ fi
 
 <% if @has_infiniband %>
 lnetib=$(lnetctl net show | grep ib)
-if [ $lnetib =="" ]
+if [ $lnetib == "" ]
 then
   reason="Node has infiniband but Lustre is not using it"
   drain_node "$reason"
