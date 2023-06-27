@@ -96,7 +96,7 @@ then
         exit 0
 fi
 
-<% if has_infiniband %>
+<% if @has_infiniband %>
 lnetib=$(lnetctl net show | grep ib)
 if [ $lnetib =="" ]
 then
