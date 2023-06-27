@@ -96,7 +96,7 @@ then
         exit 0
 fi
 
-<% if @ib_island = holyhdr or @ib_island = holyib %>
+<% if @ib_island == 'holyhdr' or @ib_island == 'holyib' %>
 lnetib=$(lnetctl net show | grep ib)
 if [ -z "$lnetib" ]
 then
