@@ -57,6 +57,12 @@ class slurm::master (
     group  => 'slurm_users',
   }
 
+  file { '/slurm/xdmod':
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+  }
+
   file { '/slurm/etc/slurm/slurm.conf':
     source => "puppet:///modules/filestore/slurm/${cluster}/slurm.conf",
     owner  => 'root',
@@ -95,6 +101,20 @@ class slurm::master (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
+  }
+
+  file { '/usr/local/sbin/data4xdmod':
+    source => 'puppet:///modules/slurm//slurm_restart.erb',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  cron { 'data4xdmod':
+    command => '/usr/local/bin/data4xdmod',
+    user    => 'root',
+    hour    => '1',
+    minute  => '10',
   }
 
   service { 'slurmctld':
