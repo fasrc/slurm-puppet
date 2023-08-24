@@ -194,15 +194,15 @@ class slurm::master (
       group  => 'root',
     }
 
-    file { '/usr/local/sbin/data4xdmod':
-      source => 'puppet:///modules/slurm//slurm_restart.erb',
+    file { '/usr/local/sbin/data4xdmod.sh':
+      source => 'puppet:///modules/slurm/data4xdmod.sh',
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
     }
 
     cron { 'data4xdmod':
-      command => '/usr/local/bin/data4xdmod',
+      command => '/usr/local/bin/data4xdmod.sh',
       user    => 'root',
       hour    => '1',
       minute  => '10',
