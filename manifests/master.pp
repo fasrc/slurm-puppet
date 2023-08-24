@@ -202,7 +202,7 @@ class slurm::master (
     }
 
     cron { 'data4xdmod':
-      command => '/usr/local/bin/data4xdmod.sh',
+      command => '/usr/local/sbin/data4xdmod.sh',
       user    => 'root',
       hour    => '1',
       minute  => '10',
