@@ -36,6 +36,14 @@ class slurm::client (
     group  => 'slurm_users',
   }
 
+  file { '/scratch/slurm':
+    ensure  => directory,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0777',
+    backup  => false,
+  }
+
   file { '/usr/local/bin/slurm_task_prolog':
     content => template('slurm/slurm_task_prolog.erb'),
     owner   => 'root',
