@@ -104,6 +104,16 @@ then
   drain_node "$reason"
   exit 0
 fi
+
+<% if @role == 'role::compute::gpu' %>
+gdrsanity=$(gdrcopy_sanity -t basic_vmmalloc | grep "Passed: 1")
+if [ -z "$gdrsanity" ]
+then
+  reason="GPU Direct RDMA not working"
+  drain_node "$reason"
+  exit
+fi
+<% end %>
 <% end %>
 
 exit 0
