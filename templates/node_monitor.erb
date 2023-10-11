@@ -107,15 +107,14 @@ fi
 
 <% if @role == 'role::compute::gpu' %>
 gdrinstall=$(rpm -qa | grep gdr)
-if [-z "$gdrinstall"]
+if [ -n "$gdrinstall" ]
 then
-else
   gdrsanity=$(gdrcopy_sanity -t basic_vmmalloc | grep "Passed: 1")
   if [ -z "$gdrsanity" ]
   then
     reason="GPU Direct RDMA not working"
     drain_node "$reason"
-    exit
+    exit 0
   fi
 fi
 <% end %>
