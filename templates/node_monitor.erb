@@ -109,7 +109,7 @@ fi
 gdrinstall=$(rpm -qa | grep gdr)
 if [ -n "$gdrinstall" ]
 then
-  gdrsanity=$(gdrcopy_sanity -t basic_vmmalloc | grep "Passed: 1")
+  gdrsanity=$(gdrcopy_sanity -t basic_cumemalloc | grep "Passed: 1")
   if [ -z "$gdrsanity" ]
   then
     reason="GPU Direct RDMA not working"
