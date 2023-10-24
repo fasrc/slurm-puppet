@@ -109,7 +109,7 @@ fi
 gdrinstall=$(rpm -qa | grep gdr)
 if [ -n "$gdrinstall" ]
 then
-  gdrsanity=$(gdrcopy_sanity -t basic_child_thread_pins_buffer_cumemalloc | grep -e "Passed: 1" -e "CUDA_ERROR_OUT_OF_MEMORY")
+  gdrsanity=$(gdrcopy_sanity -t basic_child_thread_pins_buffer_cumemalloc 2>&1 | grep -e "Passed: 1" -e "CUDA_ERROR_OUT_OF_MEMORY")
   if [ -z "$gdrsanity" ]
   then
     reason="GPU Direct RDMA not working"
