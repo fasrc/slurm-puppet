@@ -5,6 +5,7 @@ class slurm::master (
   String  $slurmdbd_purge_time = '6month',
   String  $slurmdbd_pass       = '',
   String  $slurmdbd_loc        = '',
+  Integer $aio_max_nr          = 1048576,
   Integer $somaxconn           = 4096,
   Integer $syn_backlog         = 16384,
   Integer $core_rmem_max       = 8388608,
@@ -118,6 +119,10 @@ class slurm::master (
 
   sysctl { 'net.ipv4.tcp_max_syn_backlog':
     value => $syn_backlog,
+  }
+
+  sysctl { 'fs.aio-max-nr':
+    value => $aio-max-nr,
   }
 
 #CERN suggested settings https://github.com/fast-data-transfer/fdt/blob/master/docs/doc-system-tuning.md
