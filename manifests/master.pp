@@ -122,7 +122,7 @@ class slurm::master (
   }
 
   sysctl { 'fs.aio-max-nr':
-    value => $aio-max-nr,
+    value => $aio_max_nr,
   }
 
 #CERN suggested settings https://github.com/fast-data-transfer/fdt/blob/master/docs/doc-system-tuning.md
