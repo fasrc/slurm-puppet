@@ -8,7 +8,7 @@ class slurm::client (
   String  $constrain_ram_space  = 'yes',
   String  $constrain_swap_space = 'yes',
   String  $constrain_devices    = 'yes',
-  String  $energyimpifreq       = '30',
+  String  $energyipmifreq       = '30',
 ){
   include slurm::common
 
