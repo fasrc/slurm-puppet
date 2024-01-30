@@ -154,10 +154,6 @@ class slurm::master (
     value => $tcp_moderate_rcvbuf,
   }
 
-  file { '/etc/systemd/system/slurmctld.service.d':
-    ensure => directory,
-  }
-
   systemd::dropin_file { '50-ulimit.conf':
     unit    => 'slurmctld.service',
     content => template('slurm/ulimits-dropin.erb'),
