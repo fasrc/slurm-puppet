@@ -25,6 +25,8 @@ class slurm::master (
 
   $slurm_version = $slurm::common::slurm_version
   $cluster = $slurm::common::cluster
+  $slurm_user = $slurm::common::slurm_user
+  $slurm_group = $slurm::common::slurm_group
 
   ensure_packages($slurm_master_pkgs, {'ensure' => $slurm_version})
   ensure_packages(['lua-posix'], {'ensure' => present})
