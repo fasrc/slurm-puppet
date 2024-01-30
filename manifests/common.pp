@@ -4,6 +4,8 @@ class slurm::common (
   String $slurm_version = 'present',
   String $pmix_version  = 'present',
   String $cluster       = 'test',
+  String $slurm_user    = 'slurm',
+  String $slurm_group   = 'slurm_users',
 ){
   ensure_packages($slurm_pkgs, {'ensure' => $slurm_version})
   ensure_packages(['pmix'], {'ensure' => $pmix_version})

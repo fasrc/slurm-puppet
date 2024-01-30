@@ -158,12 +158,21 @@ class slurm::master (
     ensure => directory,
   }
 
-  file { '/etc/systemd/system/slurmctld.service.d/50-ulimit.conf':
-    ensure  => present,
+  systemd::dropin_file { '50-ulimit.conf':
+    unit    => 'slurmctld.service',
     content => template('slurm/ulimits-dropin.erb'),
-    require => File['/etc/systemd/system/slurmctld.service.d'],
   }
-  
+
+  systemd::dropin_file { '10-slurm-user.conf':
+    unit    => 'slurmctld.service',
+    content => template('slurm/slurm-user-dropin.erb'),
+  }
+
+  systemd::dropin_file { '10-slurm-user.conf':
+    unit    => 'slurmdbd.service',
+    content => template('slurm/slurm-user-dropin.erb'),
+  }
+
   if $enable_slurmrestd {
     ensure_packages('slurm-slurmrestd', {'ensure' => $slurm_version})
 
