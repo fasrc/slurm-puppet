@@ -163,12 +163,12 @@ class slurm::master (
     content => template('slurm/ulimits-dropin.erb'),
   }
 
-  systemd::dropin_file { '10-slurm-user.conf':
+  systemd::dropin_file { '10-slurmctld-slurm-user.conf':
     unit    => 'slurmctld.service',
     content => template('slurm/slurm-user-dropin.erb'),
   }
 
-  systemd::dropin_file { '10-slurm-user.conf':
+  systemd::dropin_file { '10-slurmdbd-slurm-user.conf':
     unit    => 'slurmdbd.service',
     content => template('slurm/slurm-user-dropin.erb'),
   }
