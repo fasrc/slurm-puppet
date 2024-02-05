@@ -120,12 +120,4 @@ fi
 #<% end %>
 <% end %>
 
-ipmi=$(ls /dev | grep ipmi)
-if [ -z "$ipmi" ]
-then
-  reason="Node has busted ipmi"
-  drain_node "$reason"
-  exit 0
-fi
-
 exit 0

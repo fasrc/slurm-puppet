@@ -76,7 +76,7 @@ class slurm::client (
   }
 
   file { '/etc/slurm/acct_gather.conf' :
-    content => template("slurm/acct_gather_${cluster}.conf.erb"),
+    content => template("slurm/acct_gather.conf.erb"),
     owner   => 'root',
     group   => 'root',
     require => [
