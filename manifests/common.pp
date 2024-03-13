@@ -77,4 +77,11 @@ class slurm::common (
     group  => 'root',
     mode   => '0755',
   }
+
+  file { '/usr/local/bin/seff-account':
+    source => 'puppet:///modules/slurm/seff-account',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
 }
