@@ -32,8 +32,8 @@ if ! reason=$(timeout -s 9 40s nhc); then
 fi
 
 <% if @check_kernel %>
-if [ "$(uname -r)" != "<%= @kernel_release %>" ]; then
-	reason="kernel version != <%= @kernel_release %>"
+if [ "$(uname -r)" != "<%= @profile::yum::kernel::kernel_version %>-<%= @profile::yum::kernel::kernel_release %>.x86_64" ]; then
+	reason="kernel version != <%= @profile::yum::kernel::kernel_version %>-<%= @profile::yum::kernel::kernel_release %>.x86_64"
 	drain_node "$reason"
 	exit 0
 fi
@@ -104,20 +104,6 @@ then
   drain_node "$reason"
   exit 0
 fi
-
-#<% if @role == 'role::compute::gpu' %>
-#gdrinstall=$(rpm -qa | grep gdr)
-#if [ -n "$gdrinstall" ]
-#then
-#  gdrsanity=$(gdrcopy_sanity -t basic_child_thread_pins_buffer_cumemalloc 2>&1 | grep -e "Passed: 1" -e "CUDA_ERROR_OUT_OF_MEMORY")
-#  if [ -z "$gdrsanity" ]
-#  then
-#    reason="GPU Direct RDMA not working"
-#    drain_node "$reason"
-#    exit 0
-#  fi
-#fi
-#<% end %>
 <% end %>
 
 exit 0
