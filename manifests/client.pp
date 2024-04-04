@@ -9,11 +9,11 @@ class slurm::client (
   String  $constrain_swap_space = 'yes',
   String  $constrain_devices    = 'yes',
   Boolean $check_kernel         = false,
+  String  $kernel_version       = '4.18.0-425.10.1.el8_7.x86_64',
 ){
   include slurm::common
 
   $slurm_version = $slurm::common::slurm_version
-  $kernel_version = 'hiera('$profile::yum::kernel::kernel_version')-hiera('$profile::yum::kernel::kernel_release').86_64'
 
   ensure_packages($slurm_client_pkgs, {'ensure' => $slurm_version})
 
