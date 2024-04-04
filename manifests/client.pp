@@ -13,6 +13,7 @@ class slurm::client (
   include slurm::common
 
   $slurm_version = $slurm::common::slurm_version
+  $kernel_version = "$profile::yum::kernel::kernel_version-$profile::yum::kernel::kernel_release.86_64"
 
   ensure_packages($slurm_client_pkgs, {'ensure' => $slurm_version})
 
