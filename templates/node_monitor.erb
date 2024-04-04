@@ -32,8 +32,8 @@ if ! reason=$(timeout -s 9 40s nhc); then
 fi
 
 <% if @check_kernel %>
-if [ "$(uname -r)" != "<%= scope.lookupvar('profile::yum::kernel::kernel_version') %>-<%= scope.lookupvar('profile::yum::kernel::kernel_release') %>.x86_64" ]; then
-	reason="kernel version != <%= scope.lookupvar('profile::yum::kernel::kernel_version') %>-<%= scope.lookupvar('profile::yum::kernel::kernel_release') %>.x86_64"
+if [ "$(uname -r)" != "<%= hiera('profile::yum::kernel::kernel_version') %>-<%= hiera('profile::yum::kernel::kernel_release') %>.x86_64" ]; then
+	reason="kernel version != <%= hiera('profile::yum::kernel::kernel_version') %>-<%= hiera('profile::yum::kernel::kernel_release') %>.x86_64"
 	drain_node "$reason"
 	exit 0
 fi
