@@ -106,4 +106,13 @@ then
 fi
 <% end %>
 
+<% if @role == 'role::compute::gpu' %>
+gpuerr=$(nvidia-smi | grep -i Err)
+if [ -z "$gpuerr" ]
+then
+  reason="GPU Error Detected"
+  drain_node "$reason"
+fi
+<% end %>
+
 exit 0
