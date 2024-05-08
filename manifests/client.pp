@@ -10,18 +10,18 @@ class slurm::client (
   String  $constrain_devices    = 'yes',
   Boolean $check_kernel         = false,
   String  $kernel_version       = '4.18.0-425.10.1.el8_7.x86_64',
-){
+) {
   include slurm::common
 
   $slurm_version = $slurm::common::slurm_version
 
-  ensure_packages($slurm_client_pkgs, {'ensure' => $slurm_version})
+  ensure_packages($slurm_client_pkgs, { 'ensure' => $slurm_version })
 
   file { '/var/slurmd':
-    ensure  => directory,
-    owner   => 'slurm',
-    group   => 'slurm_users',
-    backup  => false,
+    ensure => directory,
+    owner  => 'slurm',
+    group  => 'slurm_users',
+    backup => false,
   }
 
   file { '/var/slurmd/run':
@@ -39,11 +39,11 @@ class slurm::client (
   }
 
   file { '/scratch/slurm':
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0777',
-    backup  => false,
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0777',
+    backup => false,
   }
 
   file { '/usr/local/bin/slurm_task_prolog':
@@ -74,11 +74,11 @@ class slurm::client (
     mode    => '0755',
     require => [
       Class['profile::nhc'],
-    ]
+    ],
   }
 
   file { '/etc/slurm/acct_gather.conf' :
-    content => template("slurm/acct_gather.conf.erb"),
+    content => template('slurm/acct_gather.conf.erb'),
     owner   => 'root',
     group   => 'root',
     require => [
@@ -118,10 +118,10 @@ class slurm::client (
   }
 
   service { 'slurmd':
-    name      => $service_name,
-    ensure    => $service_ensure,
-    enable    => $service_enable,
-    require   => [
+    ensure  => $service_ensure,
+    name    => $service_name,
+    enable  => $service_enable,
+    require => [
       File['/var/slurmd/run'],
       File['/var/slurmd/spool'],
       File['/usr/local/bin/slurm_task_prolog'],
