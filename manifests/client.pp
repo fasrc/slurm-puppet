@@ -15,7 +15,14 @@ class slurm::client (
 
   $slurm_version = $slurm::common::slurm_version
 
-  ensure_packages($slurm_client_pkgs, { 'ensure' => $slurm_version })
+  ensure_packages($slurm_client_pkgs, {
+      'ensure' => $slurm_version,
+      'require' => [
+        File['/var/slurmd/run'],
+        File['/var/slurmd/spool/slurmd'],
+      ]
+    },
+  )
 
   file { '/var/slurmd':
     ensure => directory,
@@ -26,16 +33,23 @@ class slurm::client (
 
   file { '/var/slurmd/run':
     ensure => directory,
-    backup => false,
     owner  => 'slurm',
     group  => 'slurm_users',
+    backup => false,
   }
 
   file { '/var/slurmd/spool':
     ensure => directory,
-    backup => false,
     owner  => 'slurm',
     group  => 'slurm_users',
+    backup => false,
+  }
+
+  file { '/var/slurmd/spool/slurmd':
+    ensure => directory,
+    owner  => 'slurm',
+    group  => 'slurm_users',
+    backup => false,
   }
 
   file { '/scratch/slurm':
@@ -123,7 +137,7 @@ class slurm::client (
     enable  => $service_enable,
     require => [
       File['/var/slurmd/run'],
-      File['/var/slurmd/spool'],
+      File['/var/slurmd/spool/slurmd'],
       File['/usr/local/bin/slurm_task_prolog'],
       File['/usr/local/bin/slurm_epilog'],
       File['/usr/local/bin/node_monitor'],
