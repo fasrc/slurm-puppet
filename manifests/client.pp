@@ -25,10 +25,11 @@ class slurm::client (
   )
 
   file { '/var/slurmd':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
-    backup => false,
+    ensure  => directory,
+    owner   => 'slurm',
+    group   => 'slurm_users',
+    backup  => false,
+    require => Service['sssd'],
   }
 
   file { '/var/slurmd/run':
