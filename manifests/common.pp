@@ -6,20 +6,21 @@ class slurm::common (
   String $cluster       = 'test',
   String $slurm_user    = 'slurm',
   String $slurm_group   = 'slurm_users',
-){
-  ensure_packages($slurm_pkgs, {'ensure' => $slurm_version})
-  ensure_packages(['pmix'], {'ensure' => $pmix_version})
+) {
+  ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
+  ensure_packages(['pmix'], { 'ensure' => $pmix_version })
 
   file { '/etc/slurm':
     ensure => directory,
     owner  => 'root',
     group  => 'root',
-    mode   => '0755'
+    mode   => '0755',
   }
 
   file { '/etc/slurm/slurm.conf':
-    ensure => link,
-    target => '/slurm/etc/slurm/slurm.conf',
+    ensure  => link,
+    target  => '/slurm/etc/slurm/slurm.conf',
+    require => Mount['/slurm/etc'],
   }
 
   file { '/etc/slurm/topology.conf':
@@ -28,19 +29,19 @@ class slurm::common (
   }
 
   file { '/etc/sysconfig/slurm':
-    source  => 'puppet:///modules/slurm/sysconfig-slurm',
-    owner   => 'root',
-    group   => 'root',
+    source => 'puppet:///modules/slurm/sysconfig-slurm',
+    owner  => 'root',
+    group  => 'root',
   }
 
   file { '/usr/local/bin/showq':
-    ensure  => link,
-    target  => '/slurm/etc/slurm/showq',
+    ensure => link,
+    target => '/slurm/etc/slurm/showq',
   }
 
   file { '/usr/local/bin/showq-slurm':
-    ensure  => link,
-    target  => '/slurm/etc/slurm/showq',
+    ensure => link,
+    target => '/slurm/etc/slurm/showq',
   }
 
   file { '/usr/local/bin/lsload':
