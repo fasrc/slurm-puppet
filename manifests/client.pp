@@ -20,6 +20,7 @@ class slurm::client (
       'require' => [
         File['/var/slurmd/run'],
         File['/var/slurmd/spool/slurmd'],
+        Mount['/slurm/etc'],
       ]
     },
   )
