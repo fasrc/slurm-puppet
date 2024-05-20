@@ -138,6 +138,8 @@ class slurm::client (
     name    => $service_name,
     enable  => $service_enable,
     require => [
+      Package['slurm-slurmd'],
+      Service['munge'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool/slurmd'],
       File['/usr/local/bin/slurm_task_prolog'],
