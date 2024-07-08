@@ -115,11 +115,12 @@ then
 fi
 
 peermem=$(lsmod | grep nvidia_peermem)
-if [ -z "$peermem"]
+if [ -z "$peermem" ]
 then
   systemctl restart nvidia-peermem
   peermem=$(lsmod | grep nvidia_peermem)
-  if [ -z "$peermem"]
+  if [ -z "$peermem" ]
+  then
     reason="nvidia-peermem kernel module not started"
 	drain_node "$reason"
   fi
