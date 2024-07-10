@@ -149,6 +149,7 @@ class slurm::client (
       File['/etc/slurm/job_container.conf'],
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
+      Mount['/slurm/etc'],
     ],
   }
 }
