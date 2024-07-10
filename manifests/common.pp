@@ -20,7 +20,6 @@ class slurm::common (
   file { '/etc/slurm/slurm.conf':
     ensure  => link,
     target  => '/slurm/etc/slurm/slurm.conf',
-    require => Mount['/slurm/etc'],
   }
 
   file { '/etc/slurm/topology.conf':
