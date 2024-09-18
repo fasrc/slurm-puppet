@@ -90,6 +90,8 @@ def job_eff(user, account, starttime, endtime, cluster=os.getenv('SLURM_CLUSTER_
     df_long['MaxRSS'] = df_long.MaxRSS.astype('str')
     df_long['ReqMem'] = df_long.ReqMem.astype('str')
 
+    df_long['Timelimit'] = df_long.Timelimit.replace('UNLIMITED','365-00:00:00').replace('Partition_Limit','365-00:00:00')
+
     df_long['JobID'] = df_long.JobID.map(lambda x: x.split('.')[0])
     df_long['MaxRSS'] = df_long.MaxRSS.str.replace('G', '').astype('float')
     df_long['ReqMem'] = df_long.ReqMem.str.replace('G', '').astype('float')
@@ -207,7 +209,7 @@ if __name__ == "__main__":
         description=desc,
     )
     parser.add_argument("-u", "--user", action="store", dest="user")
-    parser.add_argument("-a", "--account", action="store", dest="account")
+    parser.add_argument("-A", "--account", action="store", dest="account")
     parser.add_argument("-S", "--starttime", action="store", dest="starttime", default="now-1days") 
     parser.add_argument("-E", "--endtime", action="store", dest="endtime", default="now")   
     parser.add_argument("-c", "--cluster", action="store", dest="cluster")
