@@ -159,7 +159,7 @@ class slurm::client (
       Service['munge'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool/slurmd'],
-      File['/usr/local/bin/slurm_prolog],
+      File['/usr/local/bin/slurm_prolog'],
       File['/usr/local/bin/slurm_task_prolog'],
       File['/usr/local/bin/slurm_epilog'],
       File['/usr/local/bin/node_monitor'],
