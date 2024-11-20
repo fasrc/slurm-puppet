@@ -62,6 +62,13 @@ class slurm::client (
     backup => false,
   }
 
+  file { '/usr/local/bin/slurm_prolog':
+    content => template('slurm/slurm_prolog.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
   file { '/usr/local/bin/slurm_task_prolog':
     content => template('slurm/slurm_task_prolog.erb'),
     owner   => 'root',
@@ -133,6 +140,16 @@ class slurm::client (
     ],
   }
 
+  file { '/etc/slurm/oci.conf' :
+    source  => 'puppet:///modules/slurm/oci.conf',
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
+  }
+
   service { 'slurmd':
     ensure  => $service_ensure,
     name    => $service_name,
@@ -142,11 +159,13 @@ class slurm::client (
       Service['munge'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool/slurmd'],
+      File['/usr/local/bin/slurm_prolog],
       File['/usr/local/bin/slurm_task_prolog'],
       File['/usr/local/bin/slurm_epilog'],
       File['/usr/local/bin/node_monitor'],
       File['/etc/slurm/cgroup.conf'],
       File['/etc/slurm/job_container.conf'],
+      File['/etc/slurm/oci.conf'],
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
       Mount['/slurm/etc'],
