@@ -8,6 +8,7 @@ class slurm::client (
   String  $constrain_ram_space  = 'yes',
   String  $constrain_swap_space = 'yes',
   String  $constrain_devices    = 'yes',
+  String  $container_scratch    = '/scratch',
   Boolean $check_kernel         = false,
   String  $kernel_version       = '4.18.0-425.10.1.el8_7.x86_64',
 ) {
@@ -150,6 +151,16 @@ class slurm::client (
     ],
   }
 
+  file { '/etc/slurm/scrun.lua' :
+    content => template('slurm/scrun.lua.erb'),
+    owner   => 'root',
+    group   => 'root',
+    require => [
+      Package['slurm'],
+      File['/etc/slurm'],
+    ],
+  }
+
   service { 'slurmd':
     ensure  => $service_ensure,
     name    => $service_name,
@@ -166,6 +177,7 @@ class slurm::client (
       File['/etc/slurm/cgroup.conf'],
       File['/etc/slurm/job_container.conf'],
       File['/etc/slurm/oci.conf'],
+      File['/etc/slurm/scrun.lua'],
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
       Mount['/slurm/etc'],
