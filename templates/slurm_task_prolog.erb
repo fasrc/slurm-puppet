@@ -14,12 +14,6 @@ echo "Starting task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER..." | log
 let x=4 y=$SLURM_CPUS_ON_NODE z=x*y
 echo "export MALLOC_ARENA_MAX=$z"
 
-### Setting XDG variables per: https://slurm.schedmd.com/pam_slurm_adopt.html#PAM_CONFIG
-export XDG_RUNTIME_DIR=/run/user/$SLURM_JOB_UID
-export XDG_SESSION_ID=$(</proc/self/sessionid)
-export XDG_SESSION_TYPE=tty
-export XDG_SESSION_CLASS=user
-
 echo "Task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER complete." | log
 
 exit 0
