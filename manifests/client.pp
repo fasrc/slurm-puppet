@@ -142,7 +142,7 @@ class slurm::client (
   }
 
   file { '/etc/slurm/oci.conf' :
-    source  => 'puppet:///modules/slurm/oci.conf',
+    content => template('slurm/oci.conf.erb'),
     owner   => 'root',
     group   => 'root',
     require => [
