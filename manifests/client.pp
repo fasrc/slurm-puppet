@@ -8,7 +8,7 @@ class slurm::client (
   String  $constrain_ram_space  = 'yes',
   String  $constrain_swap_space = 'yes',
   String  $constrain_devices    = 'yes',
-  String  $container_scratch    = '/scratch',
+  String  $container_scratch    = '/tmp',
   Boolean $check_kernel         = false,
   String  $kernel_version       = '4.18.0-425.10.1.el8_7.x86_64',
 ) {
