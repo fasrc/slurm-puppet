@@ -2,22 +2,34 @@
 
 # SLURM runs this HealthCheckProgram on each compute node. If we find a
 # problem, drain the node and provide a reason why.
+#
+# This script will also remediate problems if they are cleared up. NHC
+# itself will reopen nodes if it finds the problem resolved. Similarly
+# this script has other scenarios that it will reopen nodes when it
+# knows the problem is passed.
 
 # nhc is in /usr/sbin by default.
 export PATH="$PATH:/sbin:/usr/sbin"
+hostname=$(hostname -s)
 
+# Function drain node
 drain_node()
 {
 	local reason=$1
 	shift
-
-	hostname=$(hostname -s)
 
     if [ -z "$(scontrol show node $hostname | grep Reason)" ]; then
         scontrol update nodename="$hostname" state=drain reason="$reason"
     fi
 }
 
+# Function to resume node
+resume_node()
+{
+  scontrol update state=resume nodename="$hostname"
+}
+
+# Node Health Checker
 # If NHC returns unsuccessfully, there's some problem with this node.
 if ! reason=$(timeout -s 9 40s nhc); then
 	# Get rid of the leading text and replaces it with NHC:
@@ -31,6 +43,7 @@ if ! reason=$(timeout -s 9 40s nhc); then
 	exit 0
 fi
 
+# Other Drain Node Checks
 <% if @check_kernel %>
 if [ "$(uname -r)" != "<%= @kernel_version %>" ]; then
 	reason="kernel version != <%= @kernel_version %>"
@@ -126,5 +139,24 @@ then
   fi
 fi
 <% end %>
+
+# Resume Node Checks
+# First check if there is a reason
+reason=$(scontrol show node $hostname | grep Reason)
+if [ -n "$reason" ]
+then
+  # Kill task fail
+  if [ -n "$(echo $reason | grep 'Kill task failed')" ]
+  then
+    # If the load is below a threshold then reopen
+    load=$(cat /proc/loadavg | cut -d ' ' -f 1)
+    threshold=0.9
+    if (( $(echo "$load < $threshold" | bc -l) ))
+    then
+      resume_node
+      exit 0
+    fi
+  fi
+fi
 
 exit 0
