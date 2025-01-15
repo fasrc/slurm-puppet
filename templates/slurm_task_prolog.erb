@@ -14,6 +14,13 @@ echo "Starting task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER..." | log
 let x=4 y=$SLURM_CPUS_ON_NODE z=x*y
 echo "export MALLOC_ARENA_MAX=$z"
 
+### Unsetting XDG_RUNTIME_DIR is to prevent mapping of the login node setting
+### The proper method would be to set this variable to something that exists
+### But the method recommended here: https://slurm.schedmd.com/pam_slurm_adopt.html#PAM_CONFIG
+### does not work for Rocky 8. This should be refactored in Rocky 9.
+
+echo "unset XDG_RUNTIME_DIR"
+
 echo "Task prolog for job $SLURM_JOB_ID by $SLURM_JOB_USER complete." | log
 
 exit 0
