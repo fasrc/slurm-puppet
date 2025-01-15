@@ -170,6 +170,19 @@ then
       exit 0
     fi
   fi
+
+  # Job env setup error
+  if [ -n "$(echo $reason | grep 'Job env setup error')" ]
+  then
+    # If the load is below a threshold then reopen
+    load=$(cat /proc/loadavg | cut -d ' ' -f 1)
+    threshold=0.9
+    if (( $(echo "$load < $threshold" | bc -l) ))
+    then
+      resume_node
+      exit 0
+    fi
+  fi
 fi
 
 exit 0
