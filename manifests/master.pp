@@ -163,10 +163,12 @@ class slurm::master (
   if $enable_slurmrestd {
     ensure_packages('slurm-slurmrestd', {'ensure' => $slurm_version})
 
-    user { 'slurmrestd':
+    group {'slurmrestd':
+      ensure => 'present',
+    } ~> user { 'slurmrestd':
       ensure => 'present',
       uid    => '1210',
-      group  => 'slurmrestd',
+      groups => ['slurmrestd'],
       shell  => '/sbin/nologin',
     }
 
