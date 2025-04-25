@@ -191,6 +191,7 @@ class slurm::master (
           File['/etc/slurm/slurm.conf'],
         ],
       }
+  }
 
   if $xdmod_cron {
     file { '/slurm/xdmod':
