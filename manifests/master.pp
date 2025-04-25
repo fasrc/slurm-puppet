@@ -37,25 +37,7 @@ class slurm::master (
     group  => 'root',
   }
 
-  file { '/slurm/archive':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
-  }
-
-  file { '/slurm/etc':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
-  }
-
-  file { '/slurm/etc/slurm':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
-  }
-
-  file { '/slurm/spool':
+  file { ['/slurm/etc', '/slurm/etc/slurm', '/slurm/archive', '/slurm/spool', '/var/spool/slurm/', '/var/spool/slurm/statesave/']:
     ensure => directory,
     owner  => 'slurm',
     group  => 'slurm_users',
@@ -174,30 +156,25 @@ class slurm::master (
   if $enable_slurmrestd {
     ensure_packages('slurm-slurmrestd', {'ensure' => $slurm_version})
 
-    file_line { "Slurmrestd Execstart":
-      ensure  => present,
-      path    => '/usr/lib/systemd/system/slurmrestd.service',
-      match   => '^ExecStart',
-      line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody unix:/var/lib/slurmrestd.socket',
-      replace => true,
-      notify  => Service['slurmrestd'],
+    user { 'slurmrestd':
+      ensure => 'present',
+      uid    => '1210',
+      group  => 'slurmrestd',
+      shell  => '/sbin/nologin',
     }
 
-    file_line { "Remove JWT":
-      ensure => absent,
-      path   => '/usr/lib/systemd/system/slurmrestd.service',
-      line   => 'Environment="SLURM_JWT=daemon"',
-      notify => Service['slurmrestd'],
-    }
-
-    service { 'slurmrestd':
-      ensure  => running,
-      enable  => true,
-      require => [
-        File['/etc/slurm/slurm.conf'],
-      ],
-    }
-  }
+    systemd::unit_file {'slurmrestd.service':
+      ensure => present,
+      enable => true,
+      active => true,
+      source => 'puppet:///modules/slurm/slurmrestd.service'
+    } ~> service { 'slurmrestd':
+        ensure  => running,
+        enable  => true,
+        require => [
+          File['/etc/slurm/slurm.conf'],
+        ],
+      }
 
   if $xdmod_cron {
     file { '/slurm/xdmod':
