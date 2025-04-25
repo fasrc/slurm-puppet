@@ -19,6 +19,7 @@ class slurm::master (
   String  $max_stack_size      = 'infinity',
   Boolean $enable_slurmrestd   = false,
   Boolean $xdmod_cron          = false,
+  String  $jwt_key             = 'puppet:///modules/profile/security/jwt_hs256.key',
 ){
   include slurm::common
   include slurm::repo
@@ -37,10 +38,16 @@ class slurm::master (
     group  => 'root',
   }
 
-  file { ['/slurm/etc', '/slurm/etc/slurm', '/slurm/archive', '/slurm/spool', '/var/spool/slurm/', '/var/spool/slurm/statesave/']:
+  file { ['/slurm/etc', '/slurm/etc/slurm', '/slurm/archive', '/slurm/spool', '/var/spool/slurm/']:
     ensure => directory,
     owner  => 'slurm',
     group  => 'slurm_users',
+  }
+  file { '/var/spool/slurm/statesave/':
+    ensure => directory,
+    owner  => 'slurm',
+    group  => 'slurm_users',
+    mode   => '0755',
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
@@ -161,6 +168,15 @@ class slurm::master (
       uid    => '1210',
       group  => 'slurmrestd',
       shell  => '/sbin/nologin',
+    }
+
+    file { '/var/spool/slurm/statesave/jwt_hs256.key':
+      ensure => 'present',
+      owner  => 'slurm',
+      group  => 'slurm_users',
+      source => $jwt_key,
+      mode   => '0600',
+      require => File['/var/spool/slurm/statesave'],
     }
 
     systemd::unit_file {'slurmrestd.service':
