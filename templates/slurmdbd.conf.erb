@@ -34,3 +34,9 @@ StorageHost=localhost
 StorageUser=slurm
 StoragePass=<%= @slurmdbd_pass %>
 StorageLoc=<%= @slurmdbd_loc %>
+<% if @enable_slurmrestd %>
+
+########################## slurmrestd #####################################
+AuthAltTypes=auth/jwt
+AuthAltParameters=jwt_key=/var/spool/slurm/statesave/jwt_hs256.key
+<% end %>
