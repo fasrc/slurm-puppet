@@ -181,18 +181,18 @@ class slurm::master (
       require => File['/var/spool/slurm/statesave'],
     }
 
-    systemd::unit_file {'slurmrestd.service':
-      ensure => present,
-      enable => true,
-      active => true,
-      source => 'puppet:///modules/slurm/slurmrestd.service'
-    } ~> service { 'slurmrestd':
-        ensure  => running,
-        enable  => true,
-        require => [
-          File['/etc/slurm/slurm.conf'],
-        ],
-      }
+    systemd::dropin_file { '10-slurmrestd-dropin.conf':
+      unit    => 'slurmrestd.service',
+      source  => 'puppet:///modules/slurm/slurmrestd-dropin.conf',
+    }
+
+    service { 'slurmrestd':
+      ensure  => running,
+      enable  => true,
+      require => [
+        File['/etc/slurm/slurm.conf'],
+      ],
+    }
   }
 
   if $xdmod_cron {
