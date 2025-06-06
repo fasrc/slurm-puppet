@@ -119,6 +119,16 @@ then
 fi
 <% end %>
 
+<% if @ib_island == 'holyhdr' %>
+netmask=$(ifconfig ib0 | grep 255.255.224.0)
+if [ -z "$netmask" ]
+then
+  reason="Node has incorrect IB Netmask"
+  drain_node "$reason"
+  exit 0
+fi
+<% end %>
+
 <% if @role == 'role::compute::gpu' %>
 gpuerr=$(nvidia-smi | grep -i Err)
 if [ -n "$gpuerr" ]
