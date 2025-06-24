@@ -19,6 +19,7 @@ class slurm::master (
   String  $max_stack_size      = 'infinity',
   Boolean $enable_slurmrestd   = false,
   Boolean $xdmod_cron          = false,
+  String  $jwt_key             = 'puppet:///modules/profile/security/jwt_hs256.key',
 ){
   include slurm::common
   include slurm::repo
@@ -37,28 +38,16 @@ class slurm::master (
     group  => 'root',
   }
 
-  file { '/slurm/archive':
+  file { ['/slurm/etc', '/slurm/etc/slurm', '/slurm/archive', '/slurm/spool', '/var/spool/slurm/']:
     ensure => directory,
     owner  => 'slurm',
     group  => 'slurm_users',
   }
-
-  file { '/slurm/etc':
+  file { '/var/spool/slurm/statesave/':
     ensure => directory,
     owner  => 'slurm',
     group  => 'slurm_users',
-  }
-
-  file { '/slurm/etc/slurm':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
-  }
-
-  file { '/slurm/spool':
-    ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    mode   => '0755',
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
@@ -174,20 +163,27 @@ class slurm::master (
   if $enable_slurmrestd {
     ensure_packages('slurm-slurmrestd', {'ensure' => $slurm_version})
 
-    file_line { "Slurmrestd Execstart":
-      ensure  => present,
-      path    => '/usr/lib/systemd/system/slurmrestd.service',
-      match   => '^ExecStart',
-      line    => 'ExecStart=/usr/sbin/slurmrestd -u nobody -g nobody unix:/var/lib/slurmrestd.socket',
-      replace => true,
-      notify  => Service['slurmrestd'],
+    group {'slurmrestd':
+      ensure => 'present',
+    } ~> user { 'slurmrestd':
+      ensure => 'present',
+      uid    => '1210',
+      groups => ['slurmrestd'],
+      shell  => '/sbin/nologin',
     }
 
-    file_line { "Remove JWT":
-      ensure => absent,
-      path   => '/usr/lib/systemd/system/slurmrestd.service',
-      line   => 'Environment="SLURM_JWT=daemon"',
-      notify => Service['slurmrestd'],
+    file { '/var/spool/slurm/statesave/jwt_hs256.key':
+      ensure => 'present',
+      owner  => 'slurm',
+      group  => 'slurm_users',
+      source => $jwt_key,
+      mode   => '0600',
+      require => File['/var/spool/slurm/statesave'],
+    }
+
+    systemd::dropin_file { '10-slurmrestd-dropin.conf':
+      unit    => 'slurmrestd.service',
+      source  => 'puppet:///modules/slurm/slurmrestd-dropin.conf',
     }
 
     service { 'slurmrestd':
