@@ -6,16 +6,16 @@ class slurm::gpu {
     group  => 'root',
   }
 
-  file { '/etc/slurm/prolog.d/gpustats_helper.conf':
-    source  => 'puppet:///modules/slurm/prolog.d/gpustats_helper.conf',
+  file { '/etc/slurm/prolog.d/gpustats_helper.sh':
+    source  => 'puppet:///modules/slurm/prolog.d/gpustats_helper.sh',
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
     require => File['/etc/slurm/prolog.d'],
   }
 
-  file { '/etc/slurm/epilog.d/gpustats_helper.conf':
-    source  => 'puppet:///modules/slurm/epilog.d/gpustats_helper.conf',
+  file { '/etc/slurm/epilog.d/gpustats_helper.sh':
+    source  => 'puppet:///modules/slurm/epilog.d/gpustats_helper.sh',
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
