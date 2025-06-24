@@ -1,4 +1,5 @@
 #!/bin/bash
+# See: https://princetonuniversity.github.io/jobstats/setup/gpu_node_scripts/
 DEST=/run/gpustat
 [ -e $DEST ] || mkdir -m 755 $DEST
 for i in ${GPU_DEVICE_ORDINAL//,/ } ${CUDA_VISIBLE_DEVICES//,/ }; do
