@@ -55,30 +55,8 @@ class slurm::client (
     backup => false,
   }
 
-  file { '/scratch/slurm':
-    ensure => directory,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0777',
-    backup => false,
-  }
-
-  file { '/usr/local/bin/slurm_prolog':
-    content => template('slurm/slurm_prolog.erb'),
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-  }
-
   file { '/usr/local/bin/slurm_task_prolog':
     content => template('slurm/slurm_task_prolog.erb'),
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-  }
-
-  file { '/usr/local/bin/slurm_epilog':
-    content => template('slurm/slurm_epilog.erb'),
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
@@ -99,6 +77,18 @@ class slurm::client (
     require => [
       Class['profile::nhc'],
     ],
+  }
+
+  file { '/etc/slurm/prolog.d':
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+  }
+
+  file { '/etc/slurm/epilog.d':
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
   }
 
   file { '/etc/slurm/acct_gather.conf' :
@@ -131,36 +121,6 @@ class slurm::client (
     ],
   }
 
-  file { '/etc/slurm/job_container.conf' :
-    source  => 'puppet:///modules/slurm/job_container.conf',
-    owner   => 'root',
-    group   => 'root',
-    require => [
-      Package['slurm'],
-      File['/etc/slurm'],
-    ],
-  }
-
-  file { '/etc/slurm/oci.conf' :
-    content => template('slurm/oci.conf.erb'),
-    owner   => 'root',
-    group   => 'root',
-    require => [
-      Package['slurm'],
-      File['/etc/slurm'],
-    ],
-  }
-
-  file { '/etc/slurm/scrun.lua' :
-    content => template('slurm/scrun.lua.erb'),
-    owner   => 'root',
-    group   => 'root',
-    require => [
-      Package['slurm'],
-      File['/etc/slurm'],
-    ],
-  }
-
   service { 'slurmd':
     ensure  => $service_ensure,
     name    => $service_name,
@@ -170,14 +130,11 @@ class slurm::client (
       Service['munge'],
       File['/var/slurmd/run'],
       File['/var/slurmd/spool/slurmd'],
-      File['/usr/local/bin/slurm_prolog'],
+      File['/etc/slurm/prolog.d'],
+      File['/etc/slurm/epilog.d'],
       File['/usr/local/bin/slurm_task_prolog'],
-      File['/usr/local/bin/slurm_epilog'],
       File['/usr/local/bin/node_monitor'],
       File['/etc/slurm/cgroup.conf'],
-      File['/etc/slurm/job_container.conf'],
-      File['/etc/slurm/oci.conf'],
-      File['/etc/slurm/scrun.lua'],
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
       Mount['/slurm/etc'],
