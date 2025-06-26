@@ -91,6 +91,23 @@ class slurm::client (
     group  => 'root',
   }
 
+  file { '/etc/slurm/prolog.d/dummy.sh':
+    source  => 'puppet:///modules/slurm/prolog.d/dummy.sh',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => File['/etc/slurm/prolog.d'],
+  }
+
+  file { '/etc/slurm/epilog.d/dummy.sh':
+    source  => 'puppet:///modules/slurm/epilog.d/dummy.sh',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => File['/etc/slurm/epilog.d'],
+  }
+
+
   file { '/etc/slurm/acct_gather.conf' :
     content => template('slurm/acct_gather.conf.erb'),
     owner   => 'root',
