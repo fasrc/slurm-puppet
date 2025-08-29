@@ -3,5 +3,7 @@ ConstrainRAMSpace=<%= @constrain_ram_space %>
 ConstrainSwapSpace=<%= @constrain_swap_space %>
 ConstrainDevices=<%= @constrain_devices %>
 SignalChildrenProcesses=yes
+<% if @lsbmajdistrelease == '8' %>
 #Enabled per Slurm Bug 20257
 EnableControllers=yes
+<% end %>
