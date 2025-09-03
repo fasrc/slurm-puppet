@@ -91,8 +91,8 @@ class slurm::master (
   }
 
   service { 'slurmctld':
-    name    => $service_name,
     ensure  => running,
+    name    => $service_name,
     enable  => true,
     require => [
       File['/slurm/spool'],
@@ -105,7 +105,7 @@ class slurm::master (
 
 # Performance tuning
   sysctl { 'net.core.somaxconn':
-    value => $somaxconn, 
+    value => $somaxconn,
   }
 
   sysctl { 'net.ipv4.tcp_max_syn_backlog':
@@ -173,17 +173,17 @@ class slurm::master (
     }
 
     file { '/var/spool/slurm/statesave/jwt_hs256.key':
-      ensure => 'present',
-      owner  => 'slurm',
-      group  => 'slurm_users',
-      source => $jwt_key,
-      mode   => '0600',
+      ensure  => 'present',
+      owner   => 'slurm',
+      group   => 'slurm_users',
+      source  => $jwt_key,
+      mode    => '0600',
       require => File['/var/spool/slurm/statesave'],
     }
 
     systemd::dropin_file { '10-slurmrestd-dropin.conf':
-      unit    => 'slurmrestd.service',
-      source  => 'puppet:///modules/slurm/slurmrestd-dropin.conf',
+      unit   => 'slurmrestd.service',
+      source => 'puppet:///modules/slurm/slurmrestd-dropin.conf',
     }
 
     service { 'slurmrestd':
@@ -215,5 +215,5 @@ class slurm::master (
       hour    => '1',
       minute  => '10',
     }
-  } 
+  }
 }
