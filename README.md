@@ -1,7 +1,10 @@
 # slurm-puppet
 
+> [!NOTE]
+> This module is published as a demonstration only and is not portable. As written, it depends on private Puppet modules used only in our environment.
+
 ## Description
-This module manages slurm for Puppet 6.
+This module manages slurm for Puppet 7+.
 
 ### slurm::common
 Installs everything needed for any slurm install.
