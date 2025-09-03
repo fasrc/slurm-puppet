@@ -18,8 +18,8 @@ class slurm::common (
   }
 
   file { '/etc/slurm/slurm.conf':
-    ensure  => link,
-    target  => '/slurm/etc/slurm/slurm.conf',
+    ensure => link,
+    target => '/slurm/etc/slurm/slurm.conf',
   }
 
   file { '/etc/slurm/topology.conf':

@@ -1,15 +1,16 @@
-# slurm::repo lays down a specific slurm repo if one is needed
+#Class slurm::repo lays down a specific slurm repo if one is needed
+#
 class slurm::repo (
   Boolean $manage_repo  = true,
   String  $ensure       = 'present',
   Integer $enabled      = 1,
   Integer $gpgcheck     = 0,
   Integer $priority     = 85,
-  String  $baseurl      = "http://mirror-proxy.rc.fas.harvard.edu/slurm-test/centos${::operatingsystemmajrelease}",
+  String  $baseurl      = "http://mirror-proxy.rc.fas.harvard.edu/slurm-test/centos${facts['os']['release']['major']}",
   String  $proxy        = '_none_',
 ){
   if $manage_repo {
-    if $::operatingsystem =~ /(AlmaLinux|RedHat|CentOS|Rocky)/ {
+    if $facts['os']['name'] =~ /(AlmaLinux|RedHat|CentOS|Rocky)/ {
       yumrepo { 'slurm':
         ensure   => $ensure,
         descr    => 'slurm rpms',
