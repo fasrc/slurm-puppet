@@ -173,7 +173,7 @@ class slurm::master (
       shell  => '/sbin/nologin',
     }
 
-    exec { 'generate_jwt':
+    exec { 'generate_token':
       command => '/usr/bin/dd if=/dev/random of=/root/jwt_hs256.key bs=32 count=1',
       user    => 'root',
       creates => '/root/jwt_hs256.key',
