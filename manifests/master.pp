@@ -1,33 +1,34 @@
-# slurm::master contains everything a slurm master will require
+# Class: slurm::master contains everything a slurm master will require
+#
 class slurm::master (
-  Array   $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
-  String  $service_name        = 'slurmctld',
-  String  $slurmdbd_purge_time = '6month',
-  String  $slurmdbd_pass       = '',
-  String  $slurmdbd_loc        = '',
-  Integer $aio_max_nr          = 1048576,
-  Integer $somaxconn           = 4096,
-  Integer $syn_backlog         = 16384,
-  Integer $core_rmem_max       = 8388608,
-  Integer $core_wmem_max       = 8388608,
-  String  $ipv4_tcp_rmem       = '4096 87380 8388608',
-  String  $ipv4_tcp_wmem       = '4096 65536 8388608',
-  Integer $netdev_max_backlog  = 250000,
-  Integer $tcp_no_metrics_save = 1,
-  Integer $tcp_moderate_rcvbuf = 1,
-  Integer $max_open_files      = 8192,
-  String  $max_stack_size      = 'infinity',
-  Boolean $enable_slurmrestd   = false,
-  Boolean $xdmod_cron          = false,
-  String  $jwt_key             = 'puppet:///modules/profile/security/jwt_hs256.key',
+  Array             $slurm_master_pkgs   = ['slurm-slurmctld','slurm-slurmdbd'],
+  String            $service_name        = 'slurmctld',
+  String            $slurmdbd_purge_time = '6month',
+  String            $slurmdbd_pass       = '',
+  String            $slurmdbd_loc        = '',
+  Integer           $aio_max_nr          = 1048576,
+  Integer           $somaxconn           = 4096,
+  Integer           $syn_backlog         = 16384,
+  Integer           $core_rmem_max       = 8388608,
+  Integer           $core_wmem_max       = 8388608,
+  String            $ipv4_tcp_rmem       = '4096 87380 8388608',
+  String            $ipv4_tcp_wmem       = '4096 65536 8388608',
+  Integer           $netdev_max_backlog  = 250000,
+  Integer           $tcp_no_metrics_save = 1,
+  Integer           $tcp_moderate_rcvbuf = 1,
+  Integer           $max_open_files      = 8192,
+  String            $max_stack_size      = 'infinity',
+  Boolean           $enable_slurmrestd   = false,
+  Boolean           $xdmod_cron          = false,
+  Optional[String]  $jwt_key             = undef,
 ){
   include slurm::common
   include slurm::repo
 
   $slurm_version = $slurm::common::slurm_version
-  $cluster = $slurm::common::cluster
-  $slurm_user = $slurm::common::slurm_user
-  $slurm_group = $slurm::common::slurm_group
+  $cluster       = $slurm::common::cluster
+  $slurm_user    = $slurm::common::slurm_user
+  $slurm_group   = $slurm::common::slurm_group
 
   ensure_packages($slurm_master_pkgs, {'ensure' => $slurm_version})
   ensure_packages(['lua-posix'], {'ensure' => present})
@@ -176,7 +177,7 @@ class slurm::master (
       ensure  => 'present',
       owner   => 'slurm',
       group   => 'slurm_users',
-      source  => $jwt_key,
+      content => $jwt_key,
       mode    => '0600',
       require => File['/var/spool/slurm/statesave'],
     }
