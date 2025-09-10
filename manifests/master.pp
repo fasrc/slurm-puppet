@@ -173,22 +173,20 @@ class slurm::master (
       shell  => '/sbin/nologin',
     }
 
-    if defined($jwt_key) {
-      exec { 'generate_jwt':
-        command => '/usr/bin/dd if=/dev/random of=/root/jwt_hs256.key bs=32 count=1',
-        user    => 'root',
-        creates => '/root/jwt_hs256.key',
-        unless  => '/usr/bin/test -f /root/jwt_hs256.key'
-      }
+    exec { 'generate_jwt':
+      command => '/usr/bin/dd if=/dev/random of=/root/jwt_hs256.key bs=32 count=1',
+      user    => 'root',
+      creates => '/root/jwt_hs256.key',
+      unless  => '/usr/bin/test -f /root/jwt_hs256.key'
+    }
 
-      file { '/var/spool/slurm/statesave/jwt_hs256.key':
-        ensure  => 'present',
-        owner   => 'slurm',
-        group   => 'slurm_users',
-        source  => $jwt_key,
-        mode    => '0600',
-        require => File['/var/spool/slurm/statesave'],
-      }
+    file { '/var/spool/slurm/statesave/jwt_hs256.key':
+      ensure  => 'present',
+      owner   => 'slurm',
+      group   => 'slurm_users',
+      source  => $jwt_key,
+      mode    => '0600',
+      require => File['/var/spool/slurm/statesave'],
     }
 
     systemd::dropin_file { '10-slurmrestd-dropin.conf':
@@ -201,6 +199,7 @@ class slurm::master (
       enable  => true,
       require => [
         File['/etc/slurm/slurm.conf'],
+        File['/var/spool/slurm/statesave/jwt_hs256.key']
       ],
     }
   }
