@@ -151,6 +151,11 @@ class slurm::master (
     content => template('slurm/ulimits-dropin.erb'),
   }
 
+  systemd::dropin_file { '20-stdout.conf':
+    unit    => 'slurmctld.service',
+    source => 'puppet:///modules/slurm/slurmctld-stdout-dropin.conf',
+  }
+
   systemd::dropin_file { '10-slurmctld-slurm-user.conf':
     unit    => 'slurmctld.service',
     content => template('slurm/slurm-user-dropin.erb'),
