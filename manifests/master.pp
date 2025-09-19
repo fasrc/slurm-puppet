@@ -153,7 +153,7 @@ class slurm::master (
 
   systemd::dropin_file { '20-stdout.conf':
     unit    => 'slurmctld.service',
-    source => 'puppet:///modules/slurm/slurmctld-stdout-dropin.conf',
+    source => 'puppet:///modules/slurm/stdout-dropin.conf',
   }
 
   systemd::dropin_file { '10-slurmctld-slurm-user.conf':
@@ -192,6 +192,11 @@ class slurm::master (
       source  => $jwt_key,
       mode    => '0600',
       require => File['/var/spool/slurm/statesave'],
+    }
+
+    systemd::dropin_file { '20-stdout.conf':
+      unit    => 'slurmrestd.service',
+      source => 'puppet:///modules/slurm/stdout-dropin.conf',
     }
 
     systemd::dropin_file { '10-slurmrestd-dropin.conf':
