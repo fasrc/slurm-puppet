@@ -151,7 +151,7 @@ class slurm::master (
     content => template('slurm/ulimits-dropin.erb'),
   }
 
-  systemd::dropin_file { '20-stdout.conf':
+  systemd::dropin_file { '20-slurmctld-stdout.conf':
     unit    => 'slurmctld.service',
     source => 'puppet:///modules/slurm/stdout-dropin.conf',
   }
@@ -194,7 +194,7 @@ class slurm::master (
       require => File['/var/spool/slurm/statesave'],
     }
 
-    systemd::dropin_file { '20-stdout.conf':
+    systemd::dropin_file { '20-slurmrestd-stdout.conf':
       unit    => 'slurmrestd.service',
       source => 'puppet:///modules/slurm/stdout-dropin.conf',
     }
