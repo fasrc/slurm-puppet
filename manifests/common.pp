@@ -100,6 +100,20 @@ class slurm::common (
     mode   => '0644',
   }
 
+  file { '/usr/local/bin/db_handler.py':
+    source => 'puppet:///modules/slurm/jobstats-db_handler.py',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+  }
+
+  file { '/usr/local/bin/jobstats-output_formatters.py':
+    source => 'puppet:///modules/slurm/jobstats-output_formatters.py',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+  }
+
   file { '/usr/local/bin/config.py':
     content => template('slurm/jobstats-config.py.erb'),
     owner   => 'root',
