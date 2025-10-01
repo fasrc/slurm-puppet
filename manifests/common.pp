@@ -1,11 +1,12 @@
 # slurm::common includes all the basics for slurm that everything will need
 class slurm::common (
-  Array  $slurm_pkgs    = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi','slurm-perlapi'],
-  String $slurm_version = 'present',
-  String $pmix_version  = 'present',
-  String $cluster       = 'test',
-  String $slurm_user    = 'slurm',
-  String $slurm_group   = 'slurm_users',
+  Array  $slurm_pkgs           = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi','slurm-perlapi'],
+  String $slurm_version        = 'present',
+  String $pmix_version         = 'present',
+  String $cluster              = 'test',
+  String $slurm_user           = 'slurm',
+  String $slurm_group          = 'slurm_users',
+  String $jobstats_prom_server = '',
 ) {
   ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
@@ -83,5 +84,26 @@ class slurm::common (
     owner  => 'root',
     group  => 'root',
     mode   => '0755',
+  }
+
+  file { '/usr/local/bin/jobstats':
+    source => 'puppet:///modules/slurm/jobstats',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
+  file { '/usr/local/bin/jobstats.py':
+    source => 'puppet:///modules/slurm/jobstats.py',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+  }
+
+  file { '/usr/local/bin/config.py':
+    content => template('slurm/jobstats-config.py.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
   }
 }
