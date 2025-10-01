@@ -107,7 +107,7 @@ class slurm::common (
     mode   => '0644',
   }
 
-  file { '/usr/local/bin/jobstats-output_formatters.py':
+  file { '/usr/local/bin/output_formatters.py':
     source => 'puppet:///modules/slurm/jobstats-output_formatters.py',
     owner  => 'root',
     group  => 'root',
