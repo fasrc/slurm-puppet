@@ -143,7 +143,7 @@ style = "bold-red"
 NOTES.append((condition, note, style))
 
 # low Memory utilization (red)
-condition = '(self.js.memory_efficiency < c.CPU_MEM_UTIL_RED) '
+condition = '(self.js.cpu_memory_efficiency < c.CPU_MEM_UTIL_RED) '
 note = ('f"The overall Memory utilization of this job is {ceff}%. This value "' \
         'f"is low compared to the target range of "' \
         'f"50% and above. Please investigate the reason for the low efficiency. "' \
