@@ -9,7 +9,7 @@ if [ "x$SLURM_ARRAY_JOB_ID" = "x$SLURM_JOB_ID" ]; then
 else
 	INTERNAL_JOBID=$SLURM_JOB_ID
 fi
-logger SlurmctldEpilog[$INTERNAL_JOBID]: Begin processing
+#logger SlurmctldEpilog[$INTERNAL_JOBID]: Begin processing
 STATS="`jobstats -f -b $SLURM_JOB_ID`"
 ERR=$?
 if [ $ERR = 0 ]; then
@@ -40,5 +40,5 @@ if [ $ERR = 0 ]; then
 else
 	logger "SlurmctldEpilog[$INTERNAL_JOBID]: Failed to process with error $ERR, likely failed due to job being too short"
 fi
-logger SlurmctldEpilog[$INTERNAL_JOBID]: End processing
+#logger SlurmctldEpilog[$INTERNAL_JOBID]: End processing
 exit 0
