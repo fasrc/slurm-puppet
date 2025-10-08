@@ -14,7 +14,7 @@ STATS="`jobstats -f -b $SLURM_JOB_ID`"
 ERR=$?
 if [ $ERR = 0 ]; then
 	if [[ $STATS =~ ^(Short|None|H4s) ]]; then
-		logger "SlurmctldEpilog[$INTERNAL_JOBID]: Success"
+#		logger "SlurmctldEpilog[$INTERNAL_JOBID]: Success"
 
 		# Check if external database storage is configured
 		if [ -f "/usr/local/bin/store_jobstats.py" ]; then
