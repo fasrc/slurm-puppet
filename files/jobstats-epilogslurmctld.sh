@@ -30,7 +30,7 @@ if [ $ERR = 0 ]; then
 			OUT="`sacctmgr -i update job where jobid=$INTERNAL_JOBID set AdminComment=JS1:$STATS 2>&1`"
 			if [ $? != 0 ]; then
 				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Errored out when storing AdminComment with $OUT"
-			else
+#			else
 #				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored in AdminComment"
 			fi
 		fi
