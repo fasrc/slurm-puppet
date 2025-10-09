@@ -31,7 +31,7 @@ if [ $ERR = 0 ]; then
 			if [ $? != 0 ]; then
 				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Errored out when storing AdminComment with $OUT"
 			else
-				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored in AdminComment"
+#				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored in AdminComment"
 			fi
 		fi
 	else
