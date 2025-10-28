@@ -14,16 +14,16 @@ class slurm::common (
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
 
   group { $slurm_group:
-    ensure = 'present',
-    gid    = $slurm_gid,
+    ensure => 'present',
+    gid    => $slurm_gid,
   }
 
   user { $slurm_user:
-    ensure = 'present',
-    uid    = $slurm_uid,
-    gid    = $slurm_group, 
-    home   = '/home/slurm',
-    shell  = '/bin/bash',
+    ensure => 'present',
+    uid    => $slurm_uid,
+    gid    => $slurm_group, 
+    home   => '/home/slurm',
+    shell  => '/bin/bash',
   }
 
   file { '/etc/slurm':
