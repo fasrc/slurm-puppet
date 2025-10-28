@@ -5,11 +5,26 @@ class slurm::common (
   String $pmix_version         = 'present',
   String $cluster              = 'test',
   String $slurm_user           = 'slurm',
+  String $slurm_uid            = '57812',
   String $slurm_group          = 'slurm_users',
+  String $slurm_gid            = '402600',
   String $jobstats_prom_server = '',
 ) {
   ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
+
+  group { $slurm_group:
+    ensure = 'present',
+    gid    = $slurm_gid,
+  }
+
+  user { $slurm_user:
+    ensure = 'present',
+    uid    = $slurm_uid,
+    gid    = $slurm_group, 
+    home   = '/home/slurm',
+    shell  = '/bin/bash',
+  }
 
   file { '/etc/slurm':
     ensure => directory,

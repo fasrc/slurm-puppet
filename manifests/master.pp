@@ -41,14 +41,23 @@ class slurm::master (
 
   file { ['/slurm/etc', '/slurm/etc/slurm', '/slurm/archive', '/slurm/spool', '/var/spool/slurm/']:
     ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    owner  => $slurm_user,
+    group  => $slurm_group,
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
+
   file { '/var/spool/slurm/statesave/':
     ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    owner  => $slurm_user,
+    group  => $slurm_group,
     mode   => '0755',
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/slurm/etc/slurm/slurm.conf':
@@ -72,16 +81,24 @@ class slurm::master (
 
   file { '/etc/slurm/slurmdbd.conf':
     content => template('slurm/slurmdbd.conf.erb'),
-    owner   => 'slurm',
-    group   => 'slurm_users',
+    owner   => $slurm_user,
+    group   => $slurm_group,
     mode    => '0600',
     notify  => Service['slurmdbd'],
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   service { 'slurmdbd':
     ensure  => running,
     enable  => true,
-    require => File['/etc/slurm/slurmdbd.conf'],
+    require => [
+      File['/etc/slurm/slurmdbd.conf'],
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/usr/local/sbin/slurm_restart':
@@ -109,6 +126,8 @@ class slurm::master (
       File['/slurm/etc/slurm/topology.conf'],
       File['/usr/local/sbin/jobstats-epilogslurmctld.sh'],
       Service['slurmdbd'],
+      User[$slurm_user],
+      Group[$slurm_group],
     ],
   }
 
@@ -195,11 +214,15 @@ class slurm::master (
 
     file { '/var/spool/slurm/statesave/jwt_hs256.key':
       ensure  => 'present',
-      owner   => 'slurm',
-      group   => 'slurm_users',
+      owner   => $slurm_user,
+      group   => $slurm_group,
       source  => $jwt_key,
       mode    => '0600',
-      require => File['/var/spool/slurm/statesave'],
+      require => [
+        File['/var/spool/slurm/statesave'],
+        User[$slurm_user],
+        Group[$slurm_group],
+      ],
     }
 
     systemd::dropin_file { '20-slurmrestd-stdout.conf':

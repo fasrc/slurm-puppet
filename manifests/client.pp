@@ -15,6 +15,8 @@ class slurm::client (
   include slurm::common
 
   $slurm_version = $slurm::common::slurm_version
+  $slurm_user    = $slurm::common::slurm_user
+  $slurm_group   = $slurm::common::slurm_group
 
   ensure_packages($slurm_client_pkgs, {
       'ensure' => $slurm_version,
@@ -28,31 +30,46 @@ class slurm::client (
 
   file { '/var/slurmd':
     ensure  => directory,
-    owner   => 'slurm',
-    group   => 'slurm_users',
+    owner   => $slurm_user,
+    group   => $slurm_group,
     backup  => false,
-    require => Service['sssd'],
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/var/slurmd/run':
     ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    owner  => $slurm_user,
+    group  => $slurm_group,
     backup => false,
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/var/slurmd/spool':
     ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    owner  => $slurm_user,
+    group  => $slurm_group,
     backup => false,
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/var/slurmd/spool/slurmd':
     ensure => directory,
-    owner  => 'slurm',
-    group  => 'slurm_users',
+    owner  => $slurm_user,
+    group  => $slurm_group,
     backup => false,
+    require => [
+      User[$slurm_user],
+      Group[$slurm_group],
+    ],
   }
 
   file { '/usr/local/bin/slurm_task_prolog':
@@ -155,6 +172,8 @@ class slurm::client (
       File['/etc/slurm/slurm.conf'],
       File['/etc/slurm/topology.conf'],
       Mount['/slurm/etc'],
+      User[$slurm_user],
+      Group[$slurm_group],
     ],
   }
 }
