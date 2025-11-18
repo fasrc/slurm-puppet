@@ -23,17 +23,16 @@ EXTERNAL_DB_CONFIG = {
 SAMPLING_PERIOD = 60
 
 # threshold values for red versus black text and notes
-GPU_UTIL_RED   = 15  # percentage
-GPU_UTIL_BLACK = 25  # percentage
-GPU_MEM_UTIL_RED = 0 # percentage
+GPU_UTIL_RED   = 25  # percentage
+GPU_UTIL_BLACK = 0  # percentage
+GPU_MEM_UTIL_RED = 20 # percentage
 GPU_MEM_UTIL_BLACK = 0 # percentage
-CPU_UTIL_RED   = 65  # percentage
-CPU_UTIL_BLACK = 80  # percentage
+CPU_UTIL_RED   = 80  # percentage
+CPU_UTIL_BLACK = 0  # percentage
 CPU_MEM_UTIL_RED = 50 # percentage
-CPU_MEM_UTIL_BLACK = 80 # percentage
-TIME_EFFICIENCY_RED   = 10  # percentage
-TIME_EFFICIENCY_BLACK = 60  # percentage
-MIN_MEMORY_USAGE      = 70  # percentage
+CPU_MEM_UTIL_BLACK = 0 # percentage
+TIME_EFFICIENCY_RED   = 50  # percentage
+TIME_EFFICIENCY_BLACK = 0  # percentage
 MIN_RUNTIME_SECONDS   = 10 * SAMPLING_PERIOD  # seconds
 
 # translate cluster names in Slurm DB to informal names
@@ -144,9 +143,9 @@ NOTES.append((condition, note, style))
 
 # low Memory utilization (red)
 condition = '(self.js.cpu_memory_efficiency < c.CPU_MEM_UTIL_RED) '
-note = ('f"The overall Memory utilization of this job is {self.js.cpu_memory_efficiency}%. This value "' \
+note = ('f"The max Memory utilization of this job is {self.js.cpu_memory_efficiency}%. This value "' \
         'f"is low compared to the target range of "' \
-        'f"50% and above. Please investigate the reason for the low efficiency. "' \
+        'f"80% and above. Please investigate the reason for the low efficiency. "' \
         '"For more info:"',
         "https://docs.rc.fas.harvard.edu/kb/job-efficiency-and-optimization-best-practices/#Memory")
 style = "bold-red"
