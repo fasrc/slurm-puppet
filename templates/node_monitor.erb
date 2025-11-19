@@ -109,6 +109,18 @@ then
         exit 0
 fi
 
+# Checking that sssd is working, we will use rc_admin as that should always resolve
+# Need to clear the cache first
+/usr/sbin/sss_cache -g rc_admin
+sssd_check=$(/usr/bin/getent group rc_admin)
+if [ -z "$sssd_check" ]
+then
+  reason="sssd is not working"
+  drain_node "$reason"
+  exit 0
+fi
+
+
 <% if @ib_island == 'holyhdr' or @ib_island == 'holyib' or @ib_island == 'fasse' %>
 lnetib=$(lnetctl net show | grep ib)
 if [ -z "$lnetib" ]
