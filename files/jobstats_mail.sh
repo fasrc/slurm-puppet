@@ -14,7 +14,14 @@ JOB_COMPLETION_TIME=5
 
 # Get the ClusterName
 ClusterName=${SLURM_CLUSTER_NAME}
-subject="$ClusterName $2"
+
+# Change Cluster Name if odyssey
+if [ $ClusterName == 'test' ]
+then
+  ClusterName='cannon'
+fi
+
+subject="Cluster=$ClusterName $2"
 recipient=$3
 
 # as per slurm.conf man page this var is set if job finished
