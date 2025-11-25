@@ -115,6 +115,13 @@ class slurm::master (
     mode    => '0755',
   }
 
+  file { '/usr/local/bin/jobstats_mail.sh':
+    source => 'puppet:///modules/slurm/jobstats_mail.sh',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
   service { 'slurmctld':
     ensure  => running,
     name    => $service_name,
@@ -125,6 +132,7 @@ class slurm::master (
       File['/slurm/etc/slurm/slurm.conf'],
       File['/slurm/etc/slurm/topology.conf'],
       File['/usr/local/sbin/jobstats-epilogslurmctld.sh'],
+      File['/usr/local/bin/jobstats_mail.sh'],
       Service['slurmdbd'],
       User[$slurm_user],
       Group[$slurm_group],
