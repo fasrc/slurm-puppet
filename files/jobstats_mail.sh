@@ -16,7 +16,7 @@ JOB_COMPLETION_TIME=5
 ClusterName=${SLURM_CLUSTER_NAME}
 
 # Change Cluster Name if odyssey
-if [ $ClusterName == 'test' ]
+if [ $ClusterName == 'odyssey' ]
 then
   ClusterName='cannon'
 fi
