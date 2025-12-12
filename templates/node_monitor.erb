@@ -132,7 +132,7 @@ fi
 <% end %>
 
 <% if @role == 'role::compute::gpu' %>
-gpuerr=$(nvidia-smi | grep -i Err)
+gpuerr=$(nvidia-smi 2>&1 | grep -i Err)
 if [ -n "$gpuerr" ]
 then
   reason="GPU Error Detected"
