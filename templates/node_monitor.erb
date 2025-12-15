@@ -137,6 +137,7 @@ if [ -n "$gpuerr" ]
 then
   reason="GPU Error Detected"
   drain_node "$reason"
+  exit 0
 fi
 
 eccerr=$(nvidia-smi -q | grep Uncorrect | grep : | cut -d ':' -f 2 | uniq)
@@ -146,7 +147,8 @@ do
   then
     reason="Uncorrectable ECC Errors Detected on GPU"
     drain_node "$reason"
-  fi
+    exit 0
+ fi
 done
 
 peermem=$(lsmod | grep nvidia_peermem)
@@ -158,6 +160,7 @@ then
   then
     reason="nvidia-peermem kernel module not started"
 	drain_node "$reason"
+    exit 0
   fi
 fi
 <% end %>
