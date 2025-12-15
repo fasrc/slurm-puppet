@@ -140,7 +140,7 @@ then
 fi
 
 eccerr=$(nvidia-smi -q | grep Uncorrect | grep : | cut -d ':' -f 2 | uniq)
-for i in $ecceer
+for i in $eccerr
 do
   if [ $i != "0" ]
   then
