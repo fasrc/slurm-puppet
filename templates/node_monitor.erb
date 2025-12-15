@@ -140,17 +140,6 @@ then
   exit 0
 fi
 
-eccerr=$(nvidia-smi -q | grep Uncorrect | grep : | cut -d ':' -f 2 | uniq)
-for i in $eccerr
-do
-  if [ $i != "0" ]
-  then
-    reason="Uncorrectable ECC Errors Detected on GPU"
-    drain_node "$reason"
-    exit 0
- fi
-done
-
 peermem=$(lsmod | grep nvidia_peermem)
 if [ -z "$peermem" ]
 then
