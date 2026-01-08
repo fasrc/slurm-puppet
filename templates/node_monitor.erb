@@ -148,7 +148,7 @@ then
   if [ -z "$peermem" ]
   then
     reason="nvidia-peermem kernel module not started"
-	  drain_node "$reason"
+    drain_node "$reason"
     exit 0
   fi
 fi
