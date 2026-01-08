@@ -148,9 +148,17 @@ then
   if [ -z "$peermem" ]
   then
     reason="nvidia-peermem kernel module not started"
-	drain_node "$reason"
+	  drain_node "$reason"
     exit 0
   fi
+fi
+
+mntrdma=$(grep netscratch /etc/mtab | grep rdma)
+if [ -z "$mntrdma" ]
+then
+  reason="netscratch not mounted via rdma"
+  drain_node "$reason"
+  exit 0
 fi
 <% end %>
 
