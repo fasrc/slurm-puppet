@@ -146,13 +146,7 @@ class slurm::client (
   }
 
   file { '/etc/slurm/cgroup_allowed_devices_file.conf' :
-    source  => 'puppet:///modules/slurm/cgroup_allowed_devices_file.conf',
-    owner   => 'root',
-    group   => 'root',
-    require => [
-      Package['slurm'],
-      File['/etc/slurm'],
-    ],
+    ensure => absent,
   }
 
   service { 'slurmd':
