@@ -166,7 +166,7 @@ fi
 
 # Check for stale mounts.
 stale=$(timeout -s 9 10s df 2>&1 | grep Stale)
-if [ -n "$stale"]
+if [ -n "$stale" ]
 then
   reason="Stale NFS Mounts"
   drain_node "$reason"
