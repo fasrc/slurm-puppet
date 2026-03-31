@@ -1,0 +1,309 @@
+#!/usr/bin/python3
+# stotal is will calculate the total CPU-hours, GPU-hours, and TRES-hours for a user or account.
+
+import sys,os,subprocess,shlex
+import argparse
+import time,datetime
+from datetime import date
+
+# Calculate Usage
+def calc_usage(inuser, inaccount, instarttime, inendtime, header, details, csv, allaccounts):
+
+  # Get job data
+  if inuser != None:
+    jobdata = subprocess.Popen(['sacct','-anPXD','--units=G','--format=User,Account,Partition,Start,End,AllocTRES,ElapsedRaw','-u',inuser,'-S',instarttime,'-E',inendtime],
+    stdout=subprocess.PIPE,
+    universal_newlines=True)
+  elif inaccount != None:
+    jobdata = subprocess.Popen(['sacct','-anPXD','--units=G','--format=User,Account,Partition,Start,End,AllocTRES,ElapsedRaw','-A',inaccount,'-S',instarttime,'-E',inendtime],
+    stdout=subprocess.PIPE,
+    universal_newlines=True)
+  elif allaccounts:
+    jobdata = subprocess.Popen(['sacct','-anPXD','--units=G','--format=User,Account,Partition,Start,End,AllocTRES,ElapsedRaw','-S',instarttime,'-E',inendtime],
+    stdout=subprocess.PIPE,
+    universal_newlines=True)
+
+  # Converting time to integer time. Note that sacct defaults to 00:00:00 for both -S and -E
+  if 'T' not in instarttime:
+    instarttime=instarttime+'T00:00:00'
+  if 'T' not in inendtime:
+    inendtime=inendtime+'T00:00:00'
+  pattern = '%Y-%m-%dT%H:%M:%S'
+  instart = int(time.mktime(time.strptime(instarttime, pattern)))
+  inend = int(time.mktime(time.strptime(inendtime, pattern)))
+  hourrange = (inend - instart)/3600.0
+
+  # Get Partition TRES Table
+  ptresweightcpu={}
+  ptresweightmem={}
+  ptresweightgpu={}
+  partlist = subprocess.Popen(['scontrol','-o','show','partition'], stdout=subprocess.PIPE, universal_newlines=True)
+  for line in partlist.stdout:
+    #Sanitize input
+    line = line.replace("'", "\\'")
+    
+    #Turn partition information into a hash
+    part = dict(s.split("=", 1) for s in shlex.split(line) if '=' in s)
+    
+    #Get the TRESBillingWeights for a partition
+    tresweight = dict(s.split("=", 1) for s in shlex.split(part['TRESBillingWeights'].replace(",", " ")) if '=' in s)
+    ptresweightcpu[part["PartitionName"]] = float(tresweight['CPU'])
+    ptresweightmem[part["PartitionName"]] = float(tresweight['Mem'].strip('G'))
+    if 'Gres/gpu' in tresweight:
+      ptresweightgpu[part["PartitionName"]] = float(tresweight['Gres/gpu'])
+    else:
+      ptresweightgpu[part["PartitionName"]] = 0.0 
+
+  cputot = 0
+  memtot = 0.
+  gputot = 0
+  trestot = 0.
+
+  al = {}
+  ul = {}
+
+  cputotau = {}
+  memtotau = {}
+  gputotau = {}
+  trestotau = {}
+
+  # Iterate over the jobs
+  for job in jobdata.stdout:
+    (user,account,partition,start,end,alloctres,elapsedraw) = job.strip().split('|')
+    
+    # Ignore jobs that have no allocation. That means they have never run.
+    if alloctres != "":
+      # Converting time to integer time.
+      if end == "Unknown":
+        end = inendtime
+      pattern = '%Y-%m-%dT%H:%M:%S'
+      start = int(time.mktime(time.strptime(start, pattern)))
+      end = int(time.mktime(time.strptime(end, pattern)))
+      
+      # Check if job actual ran in window and sanity check if job actually has sensible time.
+      if start < inend:
+        # Storing dummy variable to get account and user list.
+        al[account] = 1
+        ul[user] = 1
+
+        # Parsing AllocTRES.
+        atres = dict(s.split("=", 1) for s in shlex.split(alloctres.replace(",", " ")) if '=' in s)
+        cpu = int(atres["cpu"])
+        mem = float(atres["mem"].strip("G"))
+        if 'gres/gpu' in atres:
+          gpu = int(atres['gres/gpu'])
+        else:
+          gpu = 0
+
+        # Sum up the usage
+        # Note that this caps the usage only in the window that is specified. The jobs may continue running before and after the window, but we care about the usage in the specific window.
+        # This properly handles DST as it relies on elapsedraw and subtracting overage from that.
+        elapsedwindow = int(elapsedraw)
+
+        if start < instart:
+          elapsedwindow = elapsedwindow - (instart - start)
+
+        if end > inend:
+          elapsedwindow = elapsedwindow - (end - inend)
+
+        elapsedwindow = max(float(elapsedwindow),0.)/3600.
+
+        try:
+          try:
+            cputotau[account][user] = cputotau[account][user]+cpu*elapsedwindow
+            memtotau[account][user] = memtotau[account][user]+mem*elapsedwindow
+            gputotau[account][user] = gputotau[account][user]+gpu*elapsedwindow
+            trestotau[account][user] = trestotau[account][user]+(ptresweightcpu[partition]*float(cpu)+ptresweightmem[partition]*mem+ptresweightgpu[partition]*float(gpu))*float(elapsedwindow)
+          except:
+            cputotau[account][user] = cpu*elapsedwindow
+            memtotau[account][user] = mem*elapsedwindow
+            gputotau[account][user] = gpu*elapsedwindow
+            trestotau[account][user] = (ptresweightcpu[partition]*float(cpu)+ptresweightmem[partition]*mem+ptresweightgpu[partition]*float(gpu))*float(elapsedwindow)
+        except:
+          cputotau[account] = {user: cpu*elapsedwindow}
+          memtotau[account] = {user: mem*elapsedwindow}
+          gputotau[account] = {user: gpu*elapsedwindow}
+          trestotau[account] = {user: (ptresweightcpu[partition]*float(cpu)+ptresweightmem[partition]*mem+ptresweightgpu[partition]*float(gpu))*float(elapsedwindow)}
+
+  # Sort lists
+  alsort = dict(sorted(al.items()))
+  ulsort = dict(sorted(ul.items()))
+
+  # Compute Sums And Output Data
+  # First we will do the case where we are grabbing info for a specific user.
+  if inuser != None:
+    # Print header
+    if header:
+      if csv:
+        print(f"Start,{instarttime}")
+        print(f"End,{inendtime}")
+        print(f"Total Hours,{hourrange:.2f}")
+        if details:
+          print(f"Account,User,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+        else:
+          print(f",User,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+      else:
+        print(f"Window")
+        print(f"  Start: {instarttime}")
+        print(f"  End:   {inendtime}")
+        print(f"Total Hours: {hourrange:.2f}")
+        if details:
+          print(f"Account                 User                          CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+        else:
+          print(f"                        User                          CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+
+    # Sum up all jobs over all accounts for this user
+    for a in alsort:
+      cputot = cputot + cputotau[a][inuser]
+      memtot = memtot + memtotau[a][inuser]
+      gputot = gputot + gputotau[a][inuser]
+      trestot = trestot + trestotau[a][inuser]
+      # Print
+      if details:
+        if csv:
+          print(f"{a},{inuser},{cputotau[a][inuser]},{memtotau[a][inuser]},{gputotau[a][inuser]},{trestotau[a][inuser]}")
+        else:
+          print(f"{a:23} {inuser:23} {cputotau[a][inuser]:15.2f} {memtotau[a][inuser]:15.2f} {gputotau[a][inuser]:15.2f} {trestotau[a][inuser]:15.2f}")
+
+    # Print summary
+    if csv:
+      print(f"Total,{inuser},{cputot},{memtot},{gputot},{trestot}")
+    else:
+      print(f"Total:                  {inuser:23} {cputot:15.2f} {memtot:15.2f} {gputot:15.2f} {trestot:15.2f}")
+  #Now for a specific account
+  elif inaccount != None:
+    # Print header
+    if header:
+      if csv:
+        print(f"Start,{instarttime}")
+        print(f"End,{inendtime}")
+        print(f"Total Hours,{hourrange:.2f}")
+        if details:
+          print(f"Account,User,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+        else:
+          print(f",Account,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+      else:
+        print(f"Window")
+        print(f"  Start: {instarttime}")
+        print(f"  End:   {inendtime}")
+        print(f"Total Hours: {hourrange:.2f}")
+        if details:
+          print(f"User                    Account                       CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+        else:
+          print(f"                        Account                       CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+    # Sum up all jobs over all users for this account
+    for u in ulsort:
+      cputot = cputot + cputotau[inaccount][u]
+      memtot = memtot + memtotau[inaccount][u]
+      gputot = gputot + gputotau[inaccount][u]
+      trestot = trestot + trestotau[inaccount][u]
+      # Print
+      if details:
+        if csv:
+          print(f"{u},{inaccount},{cputotau[inaccount][u]},{memtotau[inaccount][u]},{gputotau[inaccount][u]},{trestotau[inaccount][u]}")
+        else:
+          print(f"{u:23} {inaccount:23} {cputotau[inaccount][u]:15.2f} {memtotau[inaccount][u]:15.2f} {gputotau[inaccount][u]:15.2f} {trestotau[inaccount][u]:15.2f}")
+
+    # Print summary
+    if csv:
+      print(f"Total,{inaccount},{cputot},{memtot},{gputot},{trestot}")
+    else:
+      print(f"Total:                  {inaccount:23} {cputot:15.2f} {memtot:15.2f} {gputot:15.2f} {trestot:15.2f}")
+  #Now for everything!
+  elif allaccounts:
+    # Print header
+    if header:
+      if csv:
+        print(f"Start,{instarttime}")
+        print(f"End,{inendtime}")
+        print(f"Total Hours,{hourrange:.2f}")
+        if details:
+          print(f"User,Account,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+        else:
+          print(f",Account,CPU-Hours,Mem-Hours(GB),GPU-Hours,TRES-Hours")
+      else:
+        print(f"Window")
+        print(f"  Start: {instarttime}")
+        print(f"  End:   {inendtime}")
+        print(f"Total Hours: {hourrange:.2f}")
+        if details:
+          print(f"User                    Account                       CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+        else:
+          print(f"                        Account                       CPU-Hours   Mem-Hours(GB)       GPU-Hours      TRES-Hours")
+    # Sum up all jobs over all users in accounts
+    for a in alsort:
+      # Zero out counters
+      cputota=0.
+      memtota=0.
+      gputota=0.
+      trestota=0.
+      # Iterate over users
+      for u in ulsort:
+        try:
+          # Account Counters
+          cputota = cputota + cputotau[a][u]
+          memtota = memtota + cputotau[a][u]
+          gputota = gputota + gputotau[a][u]
+          trestota = trestota + trestotau[a][u]
+          # Global Counters
+          cputot = cputot + cputotau[a][u]
+          memtot = memtot + cputotau[a][u]
+          gputot = gputot + gputotau[a][u]
+          trestot = trestot + trestotau[a][u]
+          # Print
+          if details:
+            if csv:
+              print(f"{u},{a},{cputotau[a][u]},{memtotau[a][u]},{gputotau[a][u]},{trestotau[a][u]}")
+            else:
+              print(f"{u:23} {a:23} {cputotau[a][u]:15.2f} {memtotau[a][u]:15.2f} {gputotau[a][u]:15.2f} {trestotau[a][u]:15.2f}")
+        except:
+          continue
+
+      # Print summary
+      if csv:
+        print(f",{a},{cputota},{memtota},{gputota},{trestota}")
+      else:
+        print(f"                        {a:23} {cputota:15.2f} {memtota:15.2f} {gputota:15.2f} {trestota:15.2f}")
+
+    # Print overall summary
+    if csv:
+      print(f"Total,,{cputot},{memtot},{gputot},{trestot}")
+    else:
+      print(f"Total:                                          {cputot:15.2f} {memtot:15.2f} {gputot:15.2f} {trestot:15.2f}")
+
+# Code starts here.
+if __name__ == "__main__":
+
+  desc = (
+  """
+  stotal
+  https://github.com/fasrc/stotal
+  -----------------
+
+  stotal is will calculate the total CPU-hours, GPU-hours, and TRES-hours for a Slurm user or account.
+
+  When passed a user or account, this command calculates the total usage for that user or account over the period specified.
+  Time arguments for starttime and endtime are the same as the sacct command.
+  Note that for information on other users (even in your own account) and accounts the user must be either an Operator or Administrator.
+
+  -----------------
+  """
+  )
+
+  parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=desc,
+  )
+
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument("-u", "--user", action="store", dest="user")
+  group.add_argument("-A", "--account", action="store", dest="account")
+  group.add_argument("-a", "--all", action="store_true", dest="allaccounts", help="Will dump data on all accounts. Requires being Operator or Administrator.")
+  parser.add_argument("-S", "--starttime", action="store", dest="starttime", required=True)
+  parser.add_argument("-E", "--endtime", action="store", dest="endtime", required=True)
+  parser.add_argument("-n","--noheader", action="store_false", dest="header")
+  parser.add_argument("-d","--details", action="store_true", dest="details", help="Will print out info on individual groups that a user belongs to if --user is selected, or will print out info on individual users if --account or --all is selected")
+  parser.add_argument("--csv", action="store_true", dest="csv", help="Will dump the data in comma seperated values (CSV) format")
+  args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
+
+  calc_usage(args.user, args.account, args.starttime, args.endtime, args.header, args.details, args.csv, args.allaccounts)

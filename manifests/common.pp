@@ -135,4 +135,11 @@ class slurm::common (
     group   => 'root',
     mode    => '0644',
   }
+
+  file { '/usr/local/bin/stotal':
+    source => 'puppet:///modules/slurm/stotal',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
 }
