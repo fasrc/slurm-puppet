@@ -1,14 +1,15 @@
 # slurm::common includes all the basics for slurm that everything will need
 class slurm::common (
-  Array  $slurm_pkgs           = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi','slurm-perlapi'],
-  String $slurm_version        = 'present',
-  String $pmix_version         = 'present',
-  String $cluster              = 'test',
-  String $slurm_user           = 'slurm',
-  String $slurm_uid            = '57812',
-  String $slurm_group          = 'slurm_users',
-  String $slurm_gid            = '402600',
-  String $jobstats_prom_server = '',
+  Array   $slurm_pkgs           = ['slurm','slurm-devel','slurm-contribs','slurm-libpmi','slurm-perlapi'],
+  String  $slurm_version        = 'present',
+  String  $pmix_version         = 'present',
+  String  $cluster              = 'test',
+  String  $slurm_user           = 'slurm',
+  String  $slurm_uid            = '57812',
+  String  $slurm_group          = 'slurm_users',
+  String  $slurm_gid            = '402600',
+  String  $jobstats_prom_server = '',
+  Boolean $plugstack            = false,
 ) {
   ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
@@ -41,6 +42,14 @@ class slurm::common (
   file { '/etc/slurm/topology.conf':
     ensure => link,
     target => '/slurm/etc/slurm/topology.conf',
+  }
+
+  if $plugstack {
+    file { '/etc/slurm/plugstack.conf':
+      source => 'puppet:///modules/slurm/plugstack.conf',
+      owner  => 'root',
+      group  => 'root',
+    }
   }
 
   file { '/etc/sysconfig/slurm':
