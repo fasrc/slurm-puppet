@@ -9,7 +9,7 @@ class slurm::common (
   String  $slurm_group          = 'slurm_users',
   String  $slurm_gid            = '402600',
   String  $jobstats_prom_server = '',
-  Boolean $plugstack            = false,
+  Boolean $cedana           = false,
 ) {
   ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
@@ -44,11 +44,26 @@ class slurm::common (
     target => '/slurm/etc/slurm/topology.conf',
   }
 
-  if $plugstack {
+  if $cedana {
     file { '/etc/slurm/plugstack.conf':
       source => 'puppet:///modules/slurm/plugstack.conf',
       owner  => 'root',
       group  => 'root',
+    }
+
+    file { '/usr/lib64/slurm/job_submit_cedana.so':
+      ensure => link,
+      target => '/n/cedana/software/lib/job_submit_cedana.so'
+    }
+
+    file { '/usr/lib64/slurm/cli_filter_cedana.so':
+      ensure => link,
+      target => '/n/cedana/software/lib/cli_filter_cedana.so'
+    }
+
+    file { '/usr/lib64/slurm/task_cedana.so':
+      ensure => link,
+      target => '/n/cedana/software/lib/task_cedana.so'
     }
   }
 
