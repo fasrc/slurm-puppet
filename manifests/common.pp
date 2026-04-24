@@ -9,7 +9,7 @@ class slurm::common (
   String  $slurm_group          = 'slurm_users',
   String  $slurm_gid            = '402600',
   String  $jobstats_prom_server = '',
-  Boolean $cedana           = false,
+  Boolean $cedana               = false,
 ) {
   ensure_packages($slurm_pkgs, { 'ensure' => $slurm_version })
   ensure_packages(['pmix'], { 'ensure' => $pmix_version })
