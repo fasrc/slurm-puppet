@@ -173,6 +173,15 @@ then
   exit 0
 fi
 
+# Check for copyfail
+copyfail=$(/usr/local/sbin/check_algif_aead_funcs | grep succeed)
+if [ -n "$copyfail"]
+then
+  reason="AEAD Functions Enabled"
+  drain_node "$reason"
+  exit 0
+fi
+
 # Resume Node Checks
 # First check if there is a reason
 reason=$(scontrol show node $hostname | grep Reason)
