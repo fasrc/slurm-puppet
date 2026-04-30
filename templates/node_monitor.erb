@@ -174,7 +174,7 @@ then
 fi
 
 # Check for copyfail
-copyfail=$(/usr/local/sbin/check_algif_aead_funcs | grep succeed)
+copyfail=$(/usr/local/sbin/check_algif_aead_funcs 2>&1 | grep succeed)
 if [ -n "$copyfail" ]
 then
   reason="AEAD Functions Enabled"
