@@ -65,33 +65,6 @@ class slurm::common (
       ensure => link,
       target => '/n/cedana/software/lib/task_cedana.so'
     }
-
-    file { '/usr/lib64/slurm/libcedana-slurm.so':
-      ensure => link,
-      target => '/n/cedana/software/lib/lib-cedana-slurm.so'
-    }
-
-    file { '/usr/local/bin/cedana':
-      ensure => link,
-      target => '/n/cedana/software/bin/cedana'
-    }
-
-    file { '/usr/local/bin/cedana-slurm':
-      ensure => link,
-      target => '/n/cedana/software/bin/cedana-slurm'
-    }
-
-    file { '/etc/cedana':
-      ensure => directory,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-    }
-
-    file { '/etc/cedana/config.json':
-      ensure => link,
-      target => '/n/cedana/software/etc/config.json'
-    }
   }
 
   file { '/etc/sysconfig/slurm':
