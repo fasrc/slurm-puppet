@@ -65,6 +65,11 @@ class slurm::common (
       ensure => link,
       target => '/n/cedana/software/lib/task_cedana.so'
     }
+
+    file { '/usr/local/bin/cedana':
+      ensure => link,
+      target => '/n/cedana/software/bin/cedana',
+    }
   }
 
   file { '/etc/sysconfig/slurm':
