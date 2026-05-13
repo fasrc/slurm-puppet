@@ -46,28 +46,28 @@ class slurm::common (
 
   if $cedana {
     file { '/etc/slurm/plugstack.conf':
-      source => 'puppet:///modules/slurm/plugstack.conf',
+      ensure => absent,
       owner  => 'root',
       group  => 'root',
     }
 
     file { '/usr/lib64/slurm/job_submit_cedana.so':
-      ensure => link,
+      ensure => absent,
       target => '/n/cedana/software/lib/job_submit_cedana.so'
     }
 
     file { '/usr/lib64/slurm/cli_filter_cedana.so':
-      ensure => link,
+      ensure => absent,
       target => '/n/cedana/software/lib/cli_filter_cedana.so'
     }
 
     file { '/usr/lib64/slurm/task_cedana.so':
-      ensure => link,
+      ensure => absent,
       target => '/n/cedana/software/lib/task_cedana.so'
     }
 
     file { '/usr/local/bin/cedana':
-      ensure => link,
+      ensure => absent,
       target => '/n/cedana/software/bin/cedana',
     }
   }
