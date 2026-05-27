@@ -186,7 +186,7 @@ fi
 swtcp=$(/usr/bin/cat /etc/mtab | grep "/n/sw" | grep tcp)
 if [ -z "$swtcp" ]
 then
-  reason="/n/sw not mounted via tcp"
+  reason="sw not mounted via tcp"
   drain_node "$reason"
   exit 0
 fi  
