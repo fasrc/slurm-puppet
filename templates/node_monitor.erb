@@ -183,7 +183,7 @@ then
 fi
 
 # Check for /n/sw mounting via tcp
-swtcp=$(/usr/bin/cat | grep "/n/sw" | grep tcp)
+swtcp=$(/usr/bin/cat /etc/mtab | grep "/n/sw" | grep tcp)
 if [ -z "$swtcp" ]
 then
   reason="/n/sw not mounted via tcp"
