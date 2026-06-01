@@ -7,7 +7,7 @@ class slurm::master (
   String            $slurmdbd_pass           = '',
   String            $slurmdbd_loc            = '',
   String            $slurmdbd_debug_flags    = 'DB_USAGE',
-  String            $slurmdbd_max_query_time = '30-00:00:00'
+  String            $slurmdbd_max_query_time = '30-00:00:00',
   Integer           $aio_max_nr              = 1048576,
   Integer           $somaxconn               = 4096,
   Integer           $syn_backlog             = 16384,
