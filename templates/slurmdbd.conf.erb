@@ -23,10 +23,10 @@ CommitDelay=1
 DbdHost=localhost
 SlurmUser=slurm
 DebugLevelSyslog=verbose
-DebugFlags=DB_USAGE
+DebugFlags=<%= @slurmdbd_debug_flags %>
 PidFile=/var/run/slurmdbd.pid
 PrivateData=jobs
-MaxQueryTimeRange=30-00:00:00
+MaxQueryTimeRange=<%= @slurmdbd_max_query_time %>
 
 # Database info
 StorageType=accounting_storage/mysql
