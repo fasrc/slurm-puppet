@@ -182,15 +182,6 @@ then
   exit 0
 fi
 
-# Check for /n/sw mounting via tcp
-swtcp=$(/usr/bin/cat /etc/mtab | grep "/n/sw" | grep tcp)
-if [ -z "$swtcp" ]
-then
-  reason="sw not mounted via tcp"
-  drain_node "$reason"
-  exit 0
-fi  
-
 # Resume Node Checks
 # First check if there is a reason
 reason=$(scontrol show node $hostname | grep Reason)
