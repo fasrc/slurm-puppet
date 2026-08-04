@@ -14,16 +14,16 @@ STATS="`jobstats -f -b $SLURM_JOB_ID`"
 ERR=$?
 if [ $ERR = 0 ]; then
 	if [[ $STATS =~ ^(Short|None|H4s) ]]; then
-#		logger "SlurmctldEpilog[$INTERNAL_JOBID]: Success"
+#		logger "SlurmctldEpilog[$INTERNAL_JOBID]: Success with output $STATS"
 
 		# Check if external database storage is configured
 		if [ -f "/usr/local/bin/store_jobstats.py" ]; then
 			# Use external database storage only
-			OUT="`/usr/local/bin/store_jobstats.py --cluster=${SLURM_CLUSTER_NAME:-unknown} --jobid=$INTERNAL_JOBID --stats="JS1:$STATS" 2>&1`"
+			OUT="`/usr/local/bin/store_jobstats.py --cluster=${SLURM_CLUSTER_NAME:-unknown} --jobid=$SLURM_JOB_ID --stats="JS1:$STATS" 2>&1`"
 			if [ $? != 0 ]; then
-				logger "SlurmctldEpilog[$INTERNAL_JOBID]: External storage failed with $OUT"
+#				logger "SlurmctldEpilog[$INTERNAL_JOBID]: External storage failed with $OUT"
 			else
-				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored with external database"
+#				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored with external database"
 			fi
 		else
 			# No external storage configured, use AdminComment in slurm db
@@ -38,7 +38,7 @@ if [ $ERR = 0 ]; then
 		logger "SlurmctldEpilog[$INTERNAL_JOBID]: Apparent success but invalid output $STATS"
 	fi
 else
-	logger "SlurmctldEpilog[$INTERNAL_JOBID]: Failed to process with error $ERR, likely failed due to job being too short"
+	logger "SlurmctldEpilog[$INTERNAL_JOBID]: Failed to process with error $ERR and output $STATS"
 fi
 #logger SlurmctldEpilog[$INTERNAL_JOBID]: End processing
 exit 0

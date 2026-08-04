@@ -7,6 +7,7 @@ class slurm::gpu {
   }
 
   file { '/etc/slurm/prolog.d/gpustats_helper.sh':
+    ensure  => 'absent',
     source  => 'puppet:///modules/slurm/prolog.d/gpustats_helper.sh',
     owner   => 'root',
     group   => 'root',
@@ -15,6 +16,7 @@ class slurm::gpu {
   }
 
   file { '/etc/slurm/epilog.d/gpustats_helper.sh':
+    ensure  => 'absent',
     source  => 'puppet:///modules/slurm/epilog.d/gpustats_helper.sh',
     owner   => 'root',
     group   => 'root',
