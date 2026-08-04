@@ -21,9 +21,9 @@ if [ $ERR = 0 ]; then
 			# Use external database storage only
 			OUT="`/usr/local/bin/store_jobstats.py --cluster=${SLURM_CLUSTER_NAME:-unknown} --jobid=$SLURM_JOB_ID --stats="JS1:$STATS" 2>&1`"
 			if [ $? != 0 ]; then
-#				logger "SlurmctldEpilog[$INTERNAL_JOBID]: External storage failed with $OUT"
+				logger "SlurmctldEpilog[$INTERNAL_JOBID]: External storage failed with $OUT"
 			else
-#				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored with external database"
+				logger "SlurmctldEpilog[$INTERNAL_JOBID]: Successfully stored with external database"
 			fi
 		else
 			# No external storage configured, use AdminComment in slurm db
