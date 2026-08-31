@@ -158,13 +158,9 @@ fi
 cdivers=$(grep "cdiVersion: 0.5.0" /etc/cdi/nvidia.yaml)
 if [ -z "$cdivers" ]
 then
-  /usr/bin/nvidia-ctk cdi generate --feature-flag no-additional-gids-for-device-nodes --output=/etc/cdi/nvidia.yaml
-  cdivers=$(grep "cdiVersion: 0.5.0" /etc/cdi/nvidia.yaml)
-  if [ -z "$cdivers" ]
-    reason="nvidia cdi version wrong"
-    drain_node "$reason"
-    exit 0
-  fi
+  reason="nvidia cdi version wrong"
+  drain_node "$reason"
+  exit 0
 fi
 
 <% if @has_ib %>
