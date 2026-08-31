@@ -153,6 +153,8 @@ then
   fi
 fi
 
+# This should be removed after the OS upgrade.
+# See: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/1.19.1/release-notes.html#known-issues
 cdivers=$(grep "cdiVersion: 0.5.0" /etc/cdi/nvidia.yaml)
 if [ -z "$cdivers" ]
 then
