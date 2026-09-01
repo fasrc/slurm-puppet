@@ -11,6 +11,7 @@ MIN_INTERVAL=60.0
 NEW_ARGS=()
 SLURM_COMMAND=0
 
+# Check if its a command we are filtering
 for a in "$@"
 do
   if [[ "$a" == "squeue"* || "$a" == "sinfo"* || "$a" == "scontrol"* || "$a" == "sdiag"* || "$a" == "showq"* || "$a" == "lsload"* ]]
@@ -37,6 +38,7 @@ then
     set -- '-n' '2' $@
   fi
 
+  # Walk through all the arguments.
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -n|--interval)
@@ -91,5 +93,6 @@ then
   # Execute the actual watch command (use absolute path to avoid loop)
   exec /usr/bin/watch "${NEW_ARGS[@]}"
 else
+  # If no modifications are need just run the normal watch
   exec /usr/bin/watch "$@"
 fi
