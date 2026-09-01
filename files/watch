@@ -1,4 +1,9 @@
 #!/bin/bash
+# This script is meant to be a wrapper around the watch command to enforce a minimum cadence.
+# If the user passes a command that is to be limited the script then assesses the cadence.
+# and if too low it sets a new minimum. Note that to fully work this command must come first
+# in the users path, and does not cover scenarios where the user invokes watch directly.
+
 # Minimum allowed interval in seconds
 MIN_INTERVAL=60.0
 
