@@ -1,0 +1,90 @@
+#!/bin/bash
+# Minimum allowed interval in seconds
+MIN_INTERVAL=60.0
+
+# Initialize an array to rebuild arguments
+NEW_ARGS=()
+SLURM_COMMAND=0
+
+for a in "$@"
+do
+  if [[ "$a" == "squeue"* || "$a" == "sinfo"* || "$a" == "scontrol"* || "$a" == "sdiag"* || "$a" == "showq"* || "$a" == "lsload"* ]]
+  then
+    SLURM_COMMAND=1
+  fi
+done
+
+if [[ $SLURM_COMMAND == 1 ]]
+then
+  # Need to check if -n or --interval are set at all
+  TIME_SET="0"
+  for a in "$@"
+  do
+    if [[ "$a" == "-n"* || "$a" == "--interval"* ]]
+    then
+      TIME_SET="1"
+    fi
+  done
+
+  # If no time set, set the default which is 2
+  if [[ $TIME_SET == 0 ]]
+  then
+    set -- '-n' '2' $@
+  fi
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -n|--interval)
+        # Handle space-separated interval: -n 0.5
+        INTERVAL_VAL="$2"
+        # Compare utilizing awk to handle decimal values safely
+        IS_TOO_LOW=$(awk -v val="$INTERVAL_VAL" -v min="$MIN_INTERVAL" 'BEGIN {print (val < min) ? 1 : 0}')
+        if [ "$IS_TOO_LOW" -eq 1 ]; then
+          NEW_ARGS+=("-n" "$MIN_INTERVAL")
+          echo "Warning: Interval too low. Resetting to system minimum of ${MIN_INTERVAL}s." >&2
+        else
+          NEW_ARGS+=("-n" "$INTERVAL_VAL")
+        fi
+        shift 2
+        ;;
+      -n*)
+        # Handle attached arguments: -n0.5
+        INTERVAL_VAL="${1#-n}"
+        IS_TOO_LOW=$(awk -v val="$INTERVAL_VAL" -v min="$MIN_INTERVAL" 'BEGIN {print (val < min) ? 1 : 0}')
+        if [ "$IS_TOO_LOW" -eq 1 ]; then
+          NEW_ARGS+=("-n" "$MIN_INTERVAL")
+          echo "Warning: Interval too low. Resetting to system minimum of ${MIN_INTERVAL}s." >&2
+        else
+          NEW_ARGS+=("-n" "$INTERVAL_VAL")
+        fi
+        shift 1
+        ;;
+      --interval=*)
+        # Handle long flag: --interval=0.5
+        INTERVAL_VAL="${1#*=}"
+        IS_TOO_LOW=$(awk -v val="$INTERVAL_VAL" -v min="$MIN_INTERVAL" 'BEGIN {print (val < min) ? 1 : 0}')
+        if [ "$IS_TOO_LOW" -eq 1 ]; then
+          NEW_ARGS+=("--interval=$MIN_INTERVAL")
+          echo "Warning: Interval too low. Resetting to system minimum of ${MIN_INTERVAL}s." >&2
+        else
+          NEW_ARGS+=("$1")
+        fi
+        shift 1
+        ;;
+      --)
+        # Stop parsing options if end-of-options delimiter is found
+        NEW_ARGS+=("$@")
+        break
+        ;;
+      *)
+        NEW_ARGS+=("$1")
+        shift
+        ;;
+    esac
+  done
+
+  # Execute the actual watch command (use absolute path to avoid loop)
+  exec /usr/bin/watch "${NEW_ARGS[@]}"
+else
+  exec /usr/bin/watch "$@"
+fi
