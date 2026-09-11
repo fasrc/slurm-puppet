@@ -96,6 +96,13 @@ class slurm::client (
     ],
   }
 
+  file { '/usr/local/bin/watch':
+    source  => 'puppet:///modules/slurm/watch',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
   file { '/etc/slurm/prolog.d':
     ensure => directory,
     owner  => 'root',
