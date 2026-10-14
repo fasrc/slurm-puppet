@@ -204,17 +204,18 @@ then
     users=$(ps --no-header -e -o uid | sort | uniq)
     threshold=1000
     no_resume=0
+
     # Loop over user list
     for u in $users
     do
       if (( $(echo "$u > $threshold" | bc -l) ))
       then
-        no_resume = 1
+        no_resume=1
       fi
     done
 
     # Resume if only system processes
-    if [ $no_resume == 0 ]
+    if [ "$no_resume" == 0 ]
     then
       resume_node
       exit 0
@@ -224,10 +225,22 @@ then
   # Prolog error
   if [ -n "$(echo $reason | grep 'Prolog error')" ]
   then
-    # If the load is below a threshold then reopen
-    load=$(cat /proc/loadavg | cut -d ' ' -f 1)
-    threshold=0.9
-    if (( $(echo "$load < $threshold" | bc -l) ))
+    # Check if any userspace processes are running
+    users=$(ps --no-header -e -o uid | sort | uniq)
+    threshold=1000
+    no_resume=0
+
+    # Loop over user list
+    for u in $users
+    do
+      if (( $(echo "$u > $threshold" | bc -l) ))
+      then
+        no_resume=1
+      fi
+    done
+
+    # Resume if only system processes
+    if [ "$no_resume" == 0 ]
     then
       resume_node
       exit 0
@@ -237,10 +250,22 @@ then
   # Job env setup error
   if [ -n "$(echo $reason | grep 'Job env setup error')" ]
   then
-    # If the load is below a threshold then reopen
-    load=$(cat /proc/loadavg | cut -d ' ' -f 1)
-    threshold=0.9
-    if (( $(echo "$load < $threshold" | bc -l) ))
+    # Check if any userspace processes are running
+    users=$(ps --no-header -e -o uid | sort | uniq)
+    threshold=1000
+    no_resume=0
+
+    # Loop over user list
+    for u in $users
+    do
+      if (( $(echo "$u > $threshold" | bc -l) ))
+      then
+        no_resume=1
+      fi
+    done
+
+    # Resume if only system processes
+    if [ "$no_resume" == 0 ]
     then
       resume_node
       exit 0
