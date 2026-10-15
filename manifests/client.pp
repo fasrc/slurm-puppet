@@ -113,7 +113,7 @@ class slurm::client (
 
   cron { 'orphan_check':
     ensure  => $orphan_check,
-    command => '/usr/bin/sleep $((RANDOM % 540)); /usr/local/sbin/orphan_check.sh',
+    command => '/usr/local/sbin/orphan_check.sh',
     user    => 'root',
     minute  => '*/10',
   }

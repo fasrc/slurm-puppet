@@ -3,6 +3,9 @@
 # This script acts as an independent check on slurm to close nodes that have user processes for users who no longer have jobs on the node.
 # This script exempts checking for admin users as well as anything in subuid space because there should be an owning parent process for those owned by the original user.
 
+# Random sleep to stagger runs of this. Cron runs the script every 10 minutes.
+sleep $((RANDOM % 540))
+
 # Get current host name
 hostname=$(hostname -s)
 
