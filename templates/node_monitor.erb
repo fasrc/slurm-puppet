@@ -271,6 +271,31 @@ then
       exit 0
     fi
   fi
+
+  # Orphaned processes
+  if [ -n "$(echo $reason | grep 'Orphaned processes')" ]
+  then
+    # Check if any userspace processes are running
+    users=$(ps --no-header -e -o uid | sort | uniq)
+    threshold=1000
+    no_resume=0
+
+    # Loop over user list
+    for u in $users
+    do
+      if (( $(echo "$u > $threshold" | bc -l) ))
+      then
+        no_resume=1
+      fi
+    done
+
+    # Resume if only system processes
+    if [ "$no_resume" == 0 ]
+    then
+      resume_node
+      exit 0
+    fi
+  fi
 fi
 
 exit 0

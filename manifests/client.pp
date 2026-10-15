@@ -11,6 +11,7 @@ class slurm::client (
   String  $container_scratch    = '/tmp',
   Boolean $check_kernel         = false,
   String  $kernel_version       = '4.18.0-425.10.1.el8_7.x86_64',
+  String  $orphan_check         = 'present',
 ) {
   include slurm::common
 
@@ -101,6 +102,20 @@ class slurm::client (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
+  }
+
+  file { '/usr/local/sbin/orphan_check.sh':
+    source  => 'puppet:///modules/slurm/orphan_check.sh',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
+  cron { 'orphan_check':
+    ensure  => $orphan_check,
+    command => '/usr/bin/sleep $((RANDOM % 540)); /usr/local/sbin/orphan_check.sh',
+    user    => 'root',
+    minute  => '*/10',
   }
 
   file { '/etc/slurm/prolog.d':
