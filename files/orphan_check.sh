@@ -3,9 +3,6 @@
 # This script acts as an independent check on slurm to close nodes that have user processes for users who no longer have jobs on the node.
 # This script exempts checking for admin users as well as anything in subuid space because there should be an owning parent process for those owned by the original user.
 
-# Random sleep to stagger runs of this. Cron runs the script every 10 minutes.
-sleep $((RANDOM % 540))
-
 # Get current host name
 hostname=$(hostname -s)
 
@@ -13,7 +10,7 @@ hostname=$(hostname -s)
 users=$(ps --no-header -e -o uid | sort | uniq)
 
 # Get list of users who have jobs on this node
-slurm_users=$(sacct -N ${hostname} -o UID --noheader --state=R -X | sort | uniq)
+slurm_users=$(squeue -w ${hostname} -o %10U --noheader | sort | uniq)
 
 # Get list of users in rc_admin
 rcadmin_users=$(getent group rc_admin | cut -d ':' -f 4 | tr ',' ' ' | xargs -n1 | sort | uniq | xargs getent passwd {} | cut -d ':' -f 3)
