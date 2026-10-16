@@ -3,81 +3,61 @@
 # This script acts as an independent check on slurm to close nodes that have user processes for users who no longer have jobs on the node.
 # This script exempts checking for admin users as well as anything in subuid space because there should be an owning parent process for those owned by the original user.
 
-# Random sleep to stagger runs of this. Cron runs the script every 10 minutes.
+set -o errexit -o nounset -o pipefail
+
+# Random sleep to stagger runs of this.
 sleep $((RANDOM % 540))
 
 # Get current host name
 hostname=$(hostname -s)
 
 # Get list of users running processes
-users=$(ps --no-header -e -o uid | sort | uniq)
+users=$(ps --no-header -e -o uid | sort -u)
 
-# Get list of users who have jobs on this node
-slurm_users=$(sacct -N ${hostname} -o UID --noheader --state=R -X | sort | uniq)
+slurm_users=$(squeue --all --noheader --nodelist="$hostname" --format='%U' | sort -u)
 
-# Get list of users in rc_admin
-rcadmin_users=$(getent group rc_admin | cut -d ':' -f 4 | tr ',' ' ' | xargs -n1 | sort | uniq | xargs getent passwd {} | cut -d ':' -f 3)
-
-# Get list of users in kempner_sysadmin
-kempnersysadmin_users=$(getent group kempner_sysadmin | cut -d ':' -f 4 | tr ',' ' ' | xargs -n1 | sort | uniq | xargs getent passwd {} | cut -d ':' -f 3)
-
-# Thresholds for minimum and maximum uid for a user. Things below 1000 are system users, things above maxthreshold are subuid
+# Thresholds for minimum and maximum uid for a user. UIDs <= minthreshold are system users, UIDs >= maxthreshold are subuids.
 minthreshold=1000
 maxthreshold=100000000
 
+# Set once the node is drained (or found already closed) so later users only get linger disabled and their
+# user manager stopped.
+node_closed=false
+
 for u in $users
 do
-  if (( $(echo "$u > $minthreshold" | bc -l) ))
+  # skip processes owned by system users, subuids, and users with running Slurm jobs
+  if (( u <= minthreshold || u >= maxthreshold )) || grep -qw "$u" <<< "$slurm_users"
   then
-    if (( $(echo "$u < $maxthreshold" | bc -l) ))
+    continue
+  fi
+
+  # skip admin users. If the lookup fails (e.g., SSSD can't reach LDAP and has no cached entry),
+  # errexit aborts rather than treating an admin as a regular user.
+  user_groups=$(id -Gn "$u")
+  case " $user_groups " in
+    *" rc_admin "*|*" kempner_sysadmin "*) continue ;;
+  esac
+
+  # Disable linger as this can be inherited, then stop the user manager and wait for it to exit:
+  # disable-linger alone returns before systemd --user is gone, and pgrep below would still see it.
+  loginctl disable-linger "$u"
+  systemctl stop "user@$u.service"
+
+  # If other processes exist close node.
+  # Known race: a job for this user that starts after the squeue snapshot isn't in slurm_users, so the user's
+  # linger is disabled, their user manager stopped, and the job's processes counted here. Re-checking only
+  # the PIDs seen by the earlier ps would avoid the false drain, but not the linger and manager changes.
+  if ! $node_closed && pgrep -u "$u" >/dev/null
+  then
+    # Check if node is already closed for other reasons
+
+    node_info=$(scontrol show node "$hostname")    # errexit aborts if this fails
+    if ! grep -q 'Reason=' <<< "$node_info"
     then
-      ignore=0
-      # Check if user is in rc_admin
-      for r in $rcadmin_users
-      do
-        if [ $u == $r ]
-        then
-          ignore=1
-        fi
-      done
-
-      # Check if user is in kempner_sysadmin
-      for r in $kempnersysadmin_users
-      do
-        if [ $u == $r ]
-        then
-          ignore=1
-        fi
-      done
-
-      # Check if user is running slurm job
-      for s in $slurm_users
-      do
-        if [ $u = $s ]
-        then
-          ignore=1
-        fi
-      done
-
-      # See if we can ignore this user or not.
-      if [ $ignore == "0" ]
-      then
-        # Disable linger as this can be inherited
-        loginctl disable-linger $u
-
-        currentps=$(pgrep -u $u | wc -l)
-
-        # If other processes exist close node
-        if [ $currentps != 0 ]
-        then
-          # Check if node is already closed for other reasons
-          if [ -z "$(scontrol show node $hostname | grep Reason)" ]
-          then
-            # Close node
-            scontrol update nodename="$hostname" state=drain reason="Orphaned processes"
-          fi
-        fi
-      fi
+      # Close node
+      scontrol update nodename="$hostname" state=drain reason="Orphaned processes (uid: $u)"
     fi
+    node_closed=true
   fi
 done
