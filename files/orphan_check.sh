@@ -5,14 +5,17 @@
 
 set -o errexit -o nounset -o pipefail
 
-# Random sleep to stagger runs of this.
-sleep $((RANDOM % 540))
-
 # Get current host name
 hostname=$(hostname -s)
 
 # Get list of users running processes
-users=$(ps --no-header -e -o uid | sort -u)
+users=$(ps --no-header -e -o uid | sort | uniq)
+
+# Get list of users who have jobs on this node
+slurm_users=$(squeue -w ${hostname} -o %10U --noheader | sort | uniq)
+
+# Get list of users in rc_admin
+rcadmin_users=$(getent group rc_admin | cut -d ':' -f 4 | tr ',' ' ' | xargs -n1 | sort | uniq | xargs getent passwd {} | cut -d ':' -f 3)
 
 slurm_users=$(squeue --all --noheader --nodelist="$hostname" --format='%U' | sort -u)
 
