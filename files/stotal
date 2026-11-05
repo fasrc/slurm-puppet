@@ -71,12 +71,12 @@ def calc_usage(inuser, inaccount, instarttime, inendtime, header, details, csv, 
   for job in jobdata.stdout:
     (user,account,partition,start,end,alloctres,elapsedraw) = job.strip().split('|')
     
-    # Ignore jobs that have no allocation. That means they have never run.
-    if alloctres != "":
+    # Ignore jobs that have no allocation or no start time. That means they have never run.
+    if alloctres != "" and start != 'None':
       # Converting time to integer time.
       if end == "Unknown":
         end = inendtime
-      pattern = '%Y-%m-%dT%H:%M:%S'
+
       start = int(time.mktime(time.strptime(start, pattern)))
       end = int(time.mktime(time.strptime(end, pattern)))
       
@@ -280,7 +280,7 @@ if __name__ == "__main__":
   https://github.com/fasrc/stotal
   -----------------
 
-  stotal is will calculate the total CPU-hours, GPU-hours, and TRES-hours for a Slurm user or account.
+  stotal is will calculate the total CPU-hours, Mem-hours, GPU-hours, and TRES-hours for a Slurm user or account.
 
   When passed a user or account, this command calculates the total usage for that user or account over the period specified.
   Time arguments for starttime and endtime are the same as the sacct command.
