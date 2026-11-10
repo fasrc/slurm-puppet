@@ -116,6 +116,7 @@ class slurm::client (
     command => '/usr/local/sbin/orphan_check.sh',
     user    => 'root',
     minute  => fqdn_rand(60),
+    require => File['/usr/local/sbin/orphan_check.sh'],
   }
 
   file { '/etc/slurm/prolog.d':
