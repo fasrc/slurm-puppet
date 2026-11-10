@@ -124,6 +124,13 @@ class slurm::master (
     mode    => '0755',
   }
 
+  file { '/usr/local/sbin/clean_orphan_jobs.sh':
+    source => 'puppet:///modules/slurm/clean_orphan_jobs.sh',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+  }
+
   service { 'slurmctld':
     ensure  => running,
     name    => $service_name,
@@ -139,6 +146,15 @@ class slurm::master (
       User[$slurm_user],
       Group[$slurm_group],
     ],
+  }
+
+  cron { 'clean_orphan_jobs':
+    ensure  => present,
+    command => '/usr/local/sbin/clean_orphan_jobs.sh 2>&1 | logger -i -t clean_orphan_jobs',
+    user    => 'root',
+    minute  => '30',
+    hour    => '0',
+    require => File['/usr/local/sbin/clean_orphan_jobs.sh'],
   }
 
 # Performance tuning
